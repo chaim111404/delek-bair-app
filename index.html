@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no" />
+<meta name="robots" content="index, follow">
+<title>דלק בעיר</title>
+
+
+<!-- חיבור גוגל -->
+<meta name="google-site-verification" content="uqgbi8aMn36JPn6wtPR_xcobJQruCnKHx-0VYHAeVN0" />
+<!-- 🔹 אייקון האתר ותצוגת קישור -->
+<link rel="icon" type="image/png" href="https://i.postimg.cc/N0snTj1d/Photoroom-20250916-013942.png">
+
+<meta property="og:title" content="דלק בעיר">
+<meta property="og:description" content="מערכת ניהול מלאי מהירה ויעילה לתחנות דלק – תוצרת אתר בקליק.">
+<meta property="og:image" content="https://i.postimg.cc/N0snTj1d/Photoroom-20250916-013942.png">
+<meta property="og:url" content="https://testpacedg.w3spaces.com/delekbairapp.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#00e7ff">
+
+<style>
+:root{
+  --bg:#000; --text:#e8fbff; --muted:#a8eaff;
+  --turq:#00e7ff; --turq-2:#00cfe6; --turq-deep:#009db1;
+  --green:#1fe39b; --red:#ff3860; --card:#0a0f12;
+  --ring:0 0 0 2px rgba(0,231,255,.35), 0 0 28px rgba(0,231,255,.25), inset 0 0 36px rgba(0,231,255,.12);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* עטיפה */
+.app{min-height:100dvh;display:flex;flex-direction:column;gap:16px;padding:14px;max-width:640px;margin-inline:auto}
+
+/* בית – ריווח קל יותר בין לחצנים */
+.home{display:flex;flex-direction:column;gap:18px;margin-top:6px}
+.btn-cat{
+  width:100%;padding:25px 16px;border-radius:50px;border:1px solid rgba(0,231,255,.65);
+  background:radial-gradient(120% 140% at 50% 0%,rgba(0,231,255,.22),rgba(0,231,255,.06) 60%);
+  color:var(--text);font-weight:900;text-align:center;cursor:pointer;position:relative;
+  box-shadow:0 0 18px rgba(0,231,255,.6),inset 0 0 18px rgba(0,231,255,.18);
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-cat:before{
+  content:"";position:absolute;inset:-7px;border-radius:100px;border:2px solid rgba(0,231,255,.10);
+  animation:halo 2s ease-in-out infinite;opacity:.95;filter:blur(1px)
+}
+@keyframes halo{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:1}}
+
+/* זרימה (כרטיסיות) */
+.flow{display:none;flex-direction:column;gap:12px}
+.topbar{display:flex;justify-content:flex-start}
+.exit{
+  background:linear-gradient(180deg,#ff5f78,#ff0a2e); color:#000; font-weight:900; border:none; border-radius:999px; padding:10px 16px; cursor:pointer;
+  box-shadow:0 6px 22px rgba(255,56,96,.25);
+  -webkit-tap-highlight-color:transparent;
+}
+
+.progress{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.nums{font-size:13px;opacity:.9}
+.bar{height:7px;border-radius:999px;background:#061016;overflow:hidden;border:1px solid rgba(0,231,255,.25)}
+.bar>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--turq),var(--turq-2));box-shadow:0 0 16px rgba(0,231,255,.25) inset}
+
+/* תצוגת כרטיס אחד בכל פעם */
+.cards-viewport{position:relative;min-height:0;overflow:visible}
+.card{
+  background:var(--card); border:1px solid rgba(0,231,255,.55); border-radius:18px; box-shadow:var(--ring);
+  padding:14px; display:flex; flex-direction:column; gap:12px;
+}
+.media{
+  position:relative;
+  height:240px; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(0,231,255,.55);
+  background:
+    radial-gradient(90% 60% at 50% 30%, rgba(0,231,255,.12), transparent 60%),
+    linear-gradient(180deg, #04151a, #02090c 55%, #000 100%);
+}
+.media:before,.media:after{content:"";position:absolute;inset:0;pointer-events:none}
+.media img{
+  max-width:100%; max-height:100%;
+  width:auto; height:auto;
+  object-fit:contain; object-position:center center;
+  position:relative; z-index:1; image-rendering:auto;
+}
+
+/* אנימציות כניסה/יציאה */
+.enter-right{animation:enterRight .38s ease both}
+.enter-left{animation:enterLeft .38s ease both}
+.exit-left{animation:exitLeft .32s ease both}
+.exit-right{animation:exitRight .32s ease both}
+@keyframes enterRight{from{transform:translateX(32%) rotate(-2deg);opacity:0}to{transform:translateX(0) rotate(0);opacity:1}}
+@keyframes enterLeft{from{transform:translateX(-32%) rotate(2deg);opacity:0}to{transform:translateX(0) rotate(0);opacity:1}}
+@keyframes exitLeft{from{transform:translateX(0) rotate(0);opacity:1}to{transform:translateX(-40%) rotate(-2deg);opacity:0}}
+@keyframes exitRight{from{transform:translateX(0) rotate(0);opacity:1}to{transform:translateX(40%) rotate(2deg);opacity:0}}
+
+/* טקסט ומקשים */
+.name{font-weight:900;font-size:18px;letter-spacing:.2px}
+.actions{display:flex;gap:10px}
+.btn{flex:1;padding:14px;border-radius:999px;font-weight:900;text-align:center;cursor:pointer;position:relative;border:1px solid transparent;-webkit-tap-highlight-color:transparent}
+/* סדר: מלא מימין, מילוי משמאל */
+.btn.fill{background:var(--green);color:#01261b;order:1}
+.btn.milui{background:linear-gradient(180deg,#ff3f6a,#cc2248);color:#fff;box-shadow:0 0 20px rgba(255,56,96,.3);order:2}
+/* פעימה היקפית תמידית ל“מילוי” */
+.btn.milui:before{
+  content:"";position:absolute;inset:-6px;border-radius:999px;border:2px solid rgba(255,56,96,.45);
+  animation:miluiPulse 2s infinite ease-in-out
+}
+@keyframes miluiPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.05);opacity:1}}
+
+/* “הקודם” + טקסט – צמודים מתחת לכפתורים מחוץ לתיבה */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.prev{
+  padding:12px 14px;border-radius:14px;
+  background:linear-gradient(180deg,var(--turq),var(--turq-2));
+  border:1px solid rgba(0,231,255,.65);
+  font-weight:900;color:#000;cursor:pointer;position:relative
+}
+.prev.disabled{opacity:.35;cursor:not-allowed}
+.hint{
+  position:absolute; /* לא יכסה את הכפתור */
+  top:-44px; inset-inline-end:0;
+  background:rgba(0,231,255,.10);
+  border:1px solid rgba(0,231,255,.45); padding:6px 8px; font-size:12px; border-radius:12px;
+  opacity:0; transform:translateY(6px); transition:.25s; z-index:5; pointer-events:auto
+}
+.hint.show{opacity:1;transform:translateY(0);}
+
+/* מודאלים כלליים */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:50;background:rgba(0,0,0,.6);backdrop-filter:blur(2px)}
+.modal.show{display:flex}
+.dialog{
+  width:min(92vw,520px);background:#02070a;border:1px solid rgba(0,231,255,.25);border-radius:18px;box-shadow:var(--ring);
+  padding:16px;display:flex;flex-direction:column;gap:12px
+}
+.dialog h3{margin:0;font-size:18px}
+.row{display:flex;gap:10px}
+.btn.ok{background:linear-gradient(180deg,var(--turq),var(--turq-2));color:#001319;box-shadow:0 8px 22px rgba(0,231,255,.18)}
+.btn.outline{background:transparent;color:var(--turq);border:1px solid rgba(0,231,255,.35)}
+.btn.danger{background:linear-gradient(180deg,#ff436e,#c72248);color:#000;font-weight:900}
+
+/* נומריק–פד 1..9 + “אחר” + “ארגז” */
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.num{padding:16px 0;border-radius:14px;text-align:center;font-weight:900;border:1px solid rgba(255,255,255,.08);background:#0b1418;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.num.alt{background:#0e1f26;color:var(--turq);border-color:rgba(0,231,255,.35)}
+.num.crate{background:#10232a;color:#7af7ff;border-color:#1aa6b3}
+.other-wrap{display:flex;gap:8px}
+.other-wrap input{flex:1;padding:12px;border-radius:12px;background:#061016;color:var(--text);border:1px solid rgba(0,231,255,.25);outline:none;direction:ltr;font-size:18px}
+
+/* טבלת איסוף */
+.pickup{display:none;flex-direction:column;gap:12px}
+.legend{font-size:12px;opacity:.85}
+.table{width:100%;border-collapse:separate;border-spacing:0 10px}
+.row-tr{background:#041117;border:1px solid rgba(0,231,255,.25);border-radius:14px;overflow:hidden;transition:.18s}
+.cell{padding:12px}
+.qty-badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 10px;border-radius:999px;background:linear-gradient(180deg,var(--turq),var(--turq-2));color:#001118;font-weight:900;box-shadow:0 0 0 3px rgba(0,231,255,.16)}
+.qty-badge.crate{background:linear-gradient(180deg,#7af7ff,#34c9d7);color:#002026}
+.icon-btn{width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0b1418;color:#fff;cursor:pointer;font-size:18px;margin-inline-start:6px;-webkit-tap-highlight-color:transparent}
+.row-tr.off{opacity:.45;filter:grayscale(.2)}
+.row-tr.on{box-shadow:0 0 0 2px rgba(0,231,255,.75) inset;background:#012025}
+
+/* כפתור "סיימתי" בתחתית הטבלה */
+.pickup .done-wrap{display:flex;justify-content:center;margin-top:6px}
+
+/* מסך טעינה לטבלה – יהיה חלק */
+.loading-screen{position:fixed;inset:0;background:#000d11;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:100;color:var(--turq)}
+.loading-bar{width:80%;height:8px;background:#022;border-radius:99px;margin-top:14px;overflow:hidden}
+.loading-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--turq),var(--turq-2));width:0%}
+
+/* התאמה רחב */
+@media (min-width:860px){.app{max-width:540px}}
+  
+  .hint{ display:none !important; }
+  /*למחוק את זה שאני יסיים את הכפתורים האחרים*/
+  .btn-cat.disabled {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  cursor: not-allowed;
+}
+  #workModal {
+  align-items: flex-start; /*החלון הזמני לפיתוח כדי שלא יהיה תמיד באמצע */
+}
+
+#workModal .dialog {
+  position: relative;
+  margin-top: 10px; /* <<< משנה כמה פיקסלים מהחלק העליון */
+}
+  
+  /* כוכבים בסקר */
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.star {
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity .2s;
+  background: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path stroke="%23FFD700" stroke-width="2" d="M12 3l2.9 6.26 6.92.5-5.1 4.73 1.55 6.75L12 17.77 5.73 21.2l1.55-6.75-5.1-4.73 6.92-.5L12 3z"/></svg>') center/contain no-repeat;
+}
+.star.active { opacity: 1; }
+
+/* ספינר קטן בתוך כפתור שליחה */
+.btn .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* עיצוב כפתור שליחה במצב כבוי */
+.btn:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+  background: linear-gradient(180deg,#4c4c4c,#2b2b2b);
+  color: #999;
+}
+
+/* === פופאפ כרטיסיות נבחרות === */
+.card-note-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(2px);
+}
+.card-note-modal.show { display: flex; }
+.card-note-dialog {
+  background: #011016;
+  border: 1px solid rgba(0,231,255,.45);
+  box-shadow: 0 0 25px rgba(0,231,255,.25);
+  border-radius: 18px;
+  width: min(90%, 420px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+.card-note-dialog h3 { margin: 0; font-size: 18px; color: var(--turq); }
+.card-note-dialog p { margin: 0; font-size: 14px; opacity: .85; }
+.card-note-dialog .btn-ok {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg,var(--turq),var(--turq-2));
+  color:#001319;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 0 14px rgba(0,231,255,.3);
+}
+
+.dont-show-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  opacity: .8;
+}
+.dont-show-wrap input[type="checkbox"] {
+  accent-color: var(--turq);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* טקסט בסוגריים – אדום ומעט גדול יותר */
+.highlight-paren {
+  color:#a5a242;
+  font-weight: 900;
+  font-size: 1.12em; /* טיפה גדול יותר מהטקסט הרגיל */
+}
+
+/* עיצוב לטקסט של מעבר אוטומטי */
+.auto-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--turq);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.03px;
+}
+
+/* חץ שמאלה פועם */
+.arrow-pulse {
+  display: inline-block;
+  color: var(--turq);
+  font-size: 18px;
+  animation: arrowPulse 1.3s ease-in-out infinite;
+  text-shadow: 0 0 6px rgba(0,231,255,0.8);
+}
+
+@keyframes arrowPulse {
+  0%, 100% {
+    transform: translateX(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(-3px) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* 🔧 התאמה למובייל – מודאל יציאה וכפתורים קומפקטיים */
+@media (max-width: 600px) {
+  #exitModal .dialog {
+    width: 92%;
+    padding: 12px;
+    border-radius: 14px;
+  }
+  #exitModal h3 {
+    font-size: 16px;
+    text-align: center;
+  }
+  #exitModal .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  #exitModal .btn {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+}
+
+/* === אנימציית וי במודאל שמירה === */
+.checkmark-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.checkmark {
+  width: 80px; /* טיפה גדול יותר */
+  height: 80px;
+  stroke-width: 4;
+  stroke: #1fe39b;
+  fill: none;
+  stroke-miterlimit: 10;
+  animation: scale .3s ease-in-out .9s both;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 176; /* מותאם לרדיוס החדש */
+  stroke-dashoffset: 176;
+  stroke-width: 4;
+  stroke: #1fe39b;
+  fill: none;
+  animation: stroke .6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-width: 4;
+  stroke: #fff;
+  animation: stroke .4s cubic-bezier(0.65, 0, 0.45, 1) .6s forwards;
+}
+
+@keyframes stroke {
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes scale {
+  0%, 100% { transform: none; }
+  50% { transform: scale(1.1); }
+}
+
+:root{--turq:#00e7ff;}
+
+.envelope-scene{
+  position:fixed !important;
+  inset:0;
+  background:#000;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  opacity:0;
+  transition:opacity .6s ease;
+  z-index:999999 !important;
+  pointer-events:none;
+}
+.envelope-scene.active{opacity:1;pointer-events:auto;}
+
+.envelope-stage{
+  position:relative;
+  width:min(88vw,380px);
+  height:min(75vh,440px);
+  margin-top:50vh; ↓ מיקום נמוך יותר במסך */
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  z-index:999999 !important;
+}
+
+.envelope-svg{
+  width:100%;
+  height:auto;
+  filter:drop-shadow(0 10px 30px rgba(0,0,0,.6));
+  z-index:2;
+}
+
+.env-body-rect{
+  fill:#0b0b0b;
+  stroke:var(--turq);
+  stroke-width:3;
+  filter:drop-shadow(0 0 18px rgba(0,231,255,.4));
+}
+.env-fold{
+  fill:none;
+  stroke:rgba(0,231,255,.35);
+  stroke-width:2;
+}
+.env-lid-shape{
+  fill:#111;
+  stroke:var(--turq);
+  stroke-width:3;
+  transform-origin:180px 80px;
+  transform:perspective(800px) rotateX(180deg); /* סגור לגמרי בהתחלה */
+  filter:drop-shadow(0 0 12px rgba(0,231,255,.4));
+}
+
+/* חותמת */
+.stamp-circle{fill:none;stroke:#d83434;stroke-width:5;}
+.stamp-inner{fill:none;stroke:#d83434;stroke-width:2;stroke-dasharray:6 6;}
+.stamp-text{font:700 12px/1 Arial;fill:#d83434;letter-spacing:1px;}
+
+/* סלוט */
+.letter-slot{
+  position:absolute;
+  top:92px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 60px);
+  height:110px;
+  overflow:hidden;
+  background:rgba(0,231,255,.05);
+  border-radius:6px;
+  z-index:1;
+}
+
+/* הדף */
+.letter-card{
+  position:absolute;
+  left:50%;
+  transform:translate(-50%,100%);
+  width:calc(100% - 22px);
+  background:#0f0f0f radial-gradient(circle at 50% 0%, rgba(0,231,255,.08), transparent 70%);
+  border:2px solid var(--turq);
+  border-radius:12px;
+  color:var(--turq);
+  text-align:center;
+  padding:18px;
+  box-shadow:0 0 25px rgba(0,231,255,.5);
+  opacity:0;
+  max-height:60vh;
+  overflow:auto;
+  pointer-events:auto;
+  z-index:5 !important; /* תמיד מעל הכל */
+}
+
+.popup-title{font-size:1.3rem;margin-bottom:8px;}
+.popup-content{color:#e6f7fa;font-size:.96rem;line-height:1.6;}
+.popup-btn{
+  margin-top:14px;
+  background:var(--turq);
+  color:#000;
+  border:none;
+  padding:10px 24px;
+  border-radius:10px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.25s;
+}
+.popup-btn:hover{filter:brightness(.9);}
+
+/* נצנצים */
+.sparkles-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:10;
+}
+.sparkle{
+  position:absolute;
+  width:8px;height:8px;
+  background:radial-gradient(circle,#fff 0%,#dff 50%,rgba(0,255,255,0) 70%);
+  box-shadow:0 0 10px rgba(0,231,255,.8);
+  border-radius:50%;
+  opacity:0;
+  transform:scale(.6);
+  animation:sparkle-float 1.8s ease-out forwards;
+}
+@keyframes sparkle-float{
+  0%{opacity:0;transform:translate3d(0,0,0) scale(.6);}
+  15%{opacity:1;}
+  100%{opacity:0;transform:translate3d(var(--dx,0px),var(--dy,-60px),0) scale(1.1);}
+}
+
+/* === כפתור דילוג על קטגוריה – ממוקם במרכז, מתחת לשורה הקודמת === */
+.btn-skip-cat {
+  display: block;
+  width: 70%;
+  max-width: 340px;
+  margin: 20px auto 0 auto; /* רווח עליון, ממורכז */
+  padding: 14px 0;
+  border-radius: 999px;
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(180deg, var(--turq), var(--turq-2));
+  color: #001319;
+  border: none;
+  box-shadow: 0 0 18px rgba(0,231,255,.3);
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .3s ease;
+  position: relative;
+  z-index: 5; /* שיישאר מעל לכל דבר */
+}
+.btn-skip-cat:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(0,231,255,.4);
+}
+@media (min-width: 861px) {
+  .btn-skip-cat { display: none; } /* מוצג רק במובייל */
+}
+
+
+
+
+
+
+</style>
+</head>
+<body>
+<main class="app" id="app">
+
+  <!-- בית -->
+  <section class="home" id="home">
+    <button class="btn-cat" data-cat="drinks">מילוי מקרר שתייה</button>
+    <button class="btn-cat" data-cat="snacks">מילוי חטיפים</button>
+    <button class="btn-cat" data-cat="choco">מילוי שוקולדים</button>
+  </section>
+
+  <!-- זרימה -->
+  <section class="flow" id="flow">
+    <div class="topbar"><button class="exit" id="exitBtn">יציאה</button></div>
+    <div class="progress">
+      <div class="nums"><span id="idx">1</span>/<span id="total">3</span></div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <div class="cards-viewport" id="viewport"><!-- כרטיסים מוזרקים --></div>
+    <!-- שורת הניווט הראשית -->
+<div class="nav-row">
+  <button class="prev" id="prevBtn">
+    ← הקודם
+    <span class="hint" id="hint">אפשר גם לחיצה רציפה</span>
+  </button>
+  <div class="auto-text">מעבר אוטומטי<span class="arrow-pulse">←</span></div>
+</div>
+
+<!-- שורה נפרדת לכפתור הדילוג על קטגוריה -->
+<div class="skip-row">
+  <button class="btn-skip-cat" id="skipCategoryBtn" style="display:none;">
+    דלג על הקטגוריה הזאת
+  </button>
+</div>
+
+
+
+    </div>
+  </section>
+
+  <!-- טבלת איסוף -->
+  <section class="pickup" id="pickup">
+    <div class="legend">✅ = שמתי בעגלה • ❌ = אין במחסן</div>
+    <table class="table" id="pickTable" aria-label="טבלת איסוף"></table>
+    <div class="done-wrap"><button class="btn ok" id="doneBtn">סיימתי</button></div>
+  </section>
+
+  <!-- מודאל יציאה/שמירה -->
+  <div class="modal" id="exitModal">
+    <div class="dialog">
+      <h3>לצאת מהתהליך?</h3>
+      <div style="opacity:.85">אפשר לשמור ל־8 שעות ולהמשיך אחר כך, או לצאת ולמחוק.</div>
+      <div class="row">
+        <button class="btn ok" id="saveOnly">רק תשמרו לי את הספירה</button>
+        <button class="btn danger" id="doExit">יציאה ומחיקה</button>
+        <button class="btn outline" id="stay">חזרה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודאל הודעת הצלחה לאחר שמירה -->
+<div class="modal" id="savedModal">
+  <div class="dialog saved-success">
+    <div class="checkmark-wrapper">
+      <svg class="checkmark" viewBox="0 0 64 64">
+  <circle class="checkmark-circle" cx="32" cy="32" r="28" fill="none"/>
+  <path class="checkmark-check" fill="none" d="M18 34l8 8 20-20"/>
+</svg>
+    </div>
+    <h3>נשמר בהצלחה</h3>
+    <div style="opacity:.85;font-size:14px;">תוכלו לחזור לפה ב־8 השעות הקרובות ולהמשיך מאיפה שהפסקתם חשוב לא לסגור האפליקציה.</div>
+    <div class="row">
+      <button class="btn ok" id="savedOk">אישור</button>
+    </div>
+  </div>
+</div>
+
+
+  <!-- מודאל נומריק-פד -->
+  <div class="modal" id="padModal">
+    <div class="dialog">
+      <h3>כמה חסר?</h3>
+      <div class="numpad" id="pad"><!-- 1..9 + “אחר” + “ארגז” --></div>
+      <div class="other-wrap" id="otherWrap" style="display:none">
+        <input id="otherInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="מספר חופשי" />
+        <button class="btn ok" id="otherOk">אישור</button>
+      </div>
+      <div class="row">
+        <button class="btn outline" id="padCancel">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודאל המשך -->
+  <div class="modal" id="resumeModal">
+    <div class="dialog">
+      <h3>להמשיך מאיפה שהפסקת?</h3>
+      <div style="opacity:.85">נראה שהיית באמצע ספירה. להמשיך מהמקום האחרון?</div>
+      <div class="row">
+        <button class="btn ok" id="resumeYes">כן, המשך</button>
+        <button class="btn outline" id="resumeNo">לא, התחלה חדשה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מסך טעינת טבלה -->
+  <div class="loading-screen" id="loading">
+    <div>מייצרים עבורכם טבלה... <span id="percent">0%</span></div>
+    <div class="loading-bar"><i id="loadbar"></i></div>
+  </div>
+  
+  <!-- מודאל הודעת פיתוח -->
+<div class="modal" id="workModal">
+  <div class="dialog">
+    <h3>🔧 אנחנו עובדים על זה</h3>
+    <div style="opacity:.85">בקרוב תוכלו להשתמש בפיצ׳ר הזה. בינתיים הוא נמצא בפיתוח.</div>
+    <div class="row">
+      <button class="btn ok" id="workOk">הבנתי</button>
+    </div>
+  </div>
+</div>
+  
+  <!-- מודאל סקר חוויית שימוש -->
+<div class="modal" id="surveyModal">
+  <div class="dialog">
+    <h3>איך חוויית השימוש שלך?</h3>
+    <form id="surveyForm" action="https://formspree.io/f/xrbawyzy" method="POST">
+      <div class="stars" id="starContainer"></div>
+      <div id="feedbackWrap" style="display:none;margin-top:12px;">
+        <textarea name="feedback" placeholder="מה אפשר לשפר?" style="width:100%;min-height:60px;border-radius:10px;padding:8px;background:#061016;color:#fff;border:1px solid rgba(0,231,255,.25)"></textarea>
+      </div>
+      <input type="hidden" name="rating" id="ratingInput" />
+      <div class="row" style="margin-top:14px;">
+        <button type="button" class="btn outline" id="skipBtn" style="display:none;">דלג</button>
+        <button type="submit" class="btn ok" id="sendBtn" disabled>שליחה</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- מודאל תודה לאחר שליחה -->
+<div class="modal" id="thankModal">
+  <div class="dialog">
+    <h3>🙏 תודה על המשוב שלך</h3>
+  </div>
+</div>
+
+<!-- מודאל שגיאה (אם כשל בשליחה) -->
+<div class="modal" id="errorModal">
+  <div class="dialog">
+    <h3 style="color:#00FF00;">נשלח בהצלחה</h3>
+    <div style="opacity:.85"> 🙏תודה על המשוב שלכם </div>
+  </div>
+</div>
+
+<!-- פופאפ כרטיסיות נבחרות -->
+<div class="card-note-modal" id="cardNoteModal">
+  <div class="card-note-dialog">
+    <h3>אנא וודאו ספירה בכל המדפים</h3>
+    <p>יתכן שהפריט הזה נמצא גם במדפים אחרים</p>
+    <label class="dont-show-wrap">
+      <input type="checkbox" id="dontShowAgain" />
+      אל תציגו לי שוב עבור פריט זה
+    </label>
+    <button class="btn-ok" id="cardNoteOk">על זה</button>
+  </div>
+</div>
+
+<!-- ✉️ מעטפה נפתחת קדימה עם חותמת אדומה ודף אמיתי -->
+<div class="envelope-scene" id="envelopeScene">
+  <div class="envelope-stage">
+    <svg class="envelope-svg" viewBox="0 0 360 240">
+      <!-- גוף המעטפה -->
+      <g class="env-body">
+        <rect x="30" y="80" width="300" height="130" rx="12" ry="12" class="env-body-rect"/>
+        <path d="M30,80 L180,165 L330,80" class="env-fold"/>
+      </g>
+
+      <!-- מכסה (בהתחלה סגור) -->
+      <g class="env-lid">
+        <path d="M30,80 L180,10 L330,80 Z" class="env-lid-shape"/>
+      </g>
+
+      <!-- חותמת אדומה -->
+      <g class="stamp" transform="translate(180,70) rotate(-10) scale(1)" opacity="0">
+        <circle r="30" cx="0" cy="0" class="stamp-circle"/>
+        <circle r="23" cx="0" cy="0" class="stamp-inner"/>
+        <text x="0" y="5" text-anchor="middle" class="stamp-text">APPROVED</text>
+      </g>
+    </svg>
+
+    <!-- סלוט אמיתי שהדף יוצא מתוכו -->
+    <div class="letter-slot">
+      <div class="letter-card" id="letterCard">
+        <h2 class="popup-title">עדכון חדש לאפליקציה</h2>
+        <div class="popup-content">
+          <p>אז מה חדש ? הוספנו מוצרים חדשים שהיו חסרים הוספנו פיצרים חדשים כגון הוספת מוצר ידנית לספירה ומילוי הוספנו אפשרות לדילוג על כמה פריטים בלחיצה מאשר ללחןץ שעה אחד אחד ועוד קצת חווית משתמש תהנו</p>
+        </div>
+        <button class="popup-btn" id="popupCloseBtn">אני על זה</button>
+      </div>
+    </div>
+
+    <!-- נצנצים מסביב לחלון -->
+    <div class="sparkles-layer" id="sparklesLayer"></div>
+  </div>
+</div>
+
+
+
+
+
+
+
+  <script>
+  
+ /* === פונקציה לחישוב גרסה דינמית לפי תאריך === */
+function getDynamicVersion(baseKey, startDateStr, monthsBetweenVersions, manualOverride=null){
+  if (manualOverride) return manualOverride;
+  const startDate = new Date(startDateStr);
+  const now = new Date();
+  const diffMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth());
+  const versionNumber = Math.floor(diffMonths / monthsBetweenVersions) + 1;
+  return baseKey + "_v" + versionNumber;
+}
+
+/* ===== קטלוג ===== */
+const catalog = {
+  drinks: [
+    { id:"excel_orginal", name:"אקסל אורגינל", img:"https://i.postimg.cc/ry042Z8V/image.png", skipStart:true, skipLabel:"דלג/י על האקסלים" },
+    { id:"excel_ten",  name:"אקסל TEN",    img:"https://i.postimg.cc/zB9Vf5JJ/IMG-4240-removebg-preview.png" },
+    { id:"excel_kavin", name:"אקסל קווין רובין",  img:"https://i.postimg.cc/dQbysR18/IMG-4241-removebg-preview.png" },
+    { id:"excel_omer", name:"אקסל עומר לוי",  img:"https://i.postimg.cc/90ZzRSMy/IMG-4242-removebg-preview.png" },
+    { id:"excel_festi", name:"אקסל פסטיבי", img:"https://i.postimg.cc/JngRQQgK/IMG-4243-removebg-preview.png" },
+    { id:"excel_shahar", name:"אקסל שחר חיון", img:"https://i.postimg.cc/C1ZRYdpP/IMG-4244-removebg-preview.png", skipEnd:true },
+    { id:"blu_org", name:"בלו אורגינל", img:"https://i.postimg.cc/QVZs2djT/IMG-4245-removebg-preview.png", skipStart:true, skipLabel:"דלג/י על כל הבלו" },
+    { id:"blu_gree1", name:"בלו ירוק", img:"https://i.postimg.cc/pdsWmvJw/IMG-4255-removebg-preview.png"},
+    { id:"blu_day", name:"בלו DAY", img:"https://i.postimg.cc/N0CKWmS2/IMG-4246-removebg-preview.png", skipEnd:true },
+    { id:"bul_15r", name:"רד בול", img:"https://i.postimg.cc/sgcQ4tJc/IMG-4247-removebg-preview.png"},
+    { id:"bira_st1", name:"stella בירה", img:"https://i.postimg.cc/W3t2ry9h/IMG-4248-removebg-preview.png"},
+    { id:"koron_a5", name:"בירה קורונה", img:"https://i.postimg.cc/NfRr5y9Z/IMG-4249-removebg-preview.png"},
+    { id: "phone_case1", name: "בירה PAULANER", img: "https://i.postimg.cc/nhYb2Shq/IMG-4794-removebg-preview.png" },
+    { id:"some_23n", name:"SOMERSBY בירה", img:"https://i.postimg.cc/mrLZZkC3/IMG-4250-removebg-preview.png"},
+    { id:"tobo_rg1", name:" טובורג אדום זכוכית", img:"https://i.postimg.cc/bvwGC3Cj/IMG-4251-removebg-preview.png"},
+    { id:"gre_tob", name:"טובורג ירוק זכוכית", img:"https://i.postimg.cc/wMmg4mYz/IMG-4252-removebg-preview.png"},
+    { id:"cap_kals", name:"פחית קאלסברג שמנה", img:"https://i.postimg.cc/SxqY8ycR/IMG-4253-removebg-preview.png"},
+    { id:"heyn_k3", name:"פחית הייניקן רזה", img:"https://i.postimg.cc/66v8m70T/IMG-4254-removebg-preview.png"},
+    { id:"drink_cola_max_1", name:"ICE original (פחית)", img:"https://i.postimg.cc/mrTW9JP4/IMG-4258-removebg-preview.png" },
+    { id:"drink_lemon_zero_2", name:"ICE raspberry (פחית)", img:"https://i.postimg.cc/WpyVy5Hm/IMG-4259-removebg-preview.png" },
+    { id:"drink_orange_fresh_3", name:"BLANC 1664 (פחית)", img:"https://i.postimg.cc/26XsP52j/IMG-4260-removebg-preview.png" },
+    { id:"drink_mango_soda_4", name:"SCHLOSS KRONE (פחית)", img:"https://i.postimg.cc/vZfGf5Xr/IMG-4262-removebg-preview.png" },
+    { id:"drink_apple_green_5", name:"בירה 86 גולד", img:"https://i.postimg.cc/BQdqjm5Z/IMG-4263-removebg-preview.png" },
+    { id:"drink_berry_mix_6", name:"בירה 86 BLACK", img:"https://i.postimg.cc/WzxPJ4kY/IMG-4264-removebg-preview.png" },
+    { id:"drink_water_spark_7", name:"בירה 86 אורגינל", img:"https://i.postimg.cc/jq3qbxL7/IMG-4265-removebg-preview.png" },
+    { id:"drink_energy_red_8", name:"בירה HOLLANDIA", img:"https://i.postimg.cc/rFdVyBrY/IMG-4266-removebg-preview.png" },
+    { id:"drink_energy_blue_9", name:"פחית קאלסברג גדול", img:"https://i.postimg.cc/hG8PWVdD/IMG-4267-removebg-preview.png" },
+    { id:"drink_grape_spark_10", name:"פחית גולדסטאר גולד", img:"https://i.postimg.cc/G2c3c9Fk/IMG-4268-removebg-preview.png" },
+    { id:"drink_peach_light_11", name:"פחית גולדסטאר אדום", img:"https://i.postimg.cc/9fHFnLzg/IMG-4269-removebg-preview.png" },
+    { id:"drink_cherry_classic_12", name:"פחית טובורג אדום", img:"https://i.postimg.cc/85tpsD4x/IMG-4270-removebg-preview.png", skipEnd:true },
+    { id:"drink_strawberry_13", name:"קולה רגיל פלסטיק קטן", img:"https://i.postimg.cc/4x9xPD4h/IMG-4271-removebg-preview.png" },
+    { id:"drink_passionfruit_14", name:"קולה זירו פלסטיק קטן", img:"https://i.postimg.cc/rswp9zz8/IMG-4272-removebg-preview.png" },
+    { id:"drink_pineapple_15", name:"ספרייט רגיל פלסטיק קטן", img:"https://i.postimg.cc/02rQM6Ln/IMG-4273-removebg-preview.png" },
+    { id:"drink_watermelon_16", name:"פנטה פלסטיק רגיל קטן", img:"https://i.postimg.cc/8P3ChpGS/IMG-4274-removebg-preview.png" },
+    { id:"drink_cola_vanilla_17", name:"פיוסטי קטן אננס", img:"https://i.postimg.cc/v80TZ7SD/IMG-4276-removebg-preview.png" },
+    { id:"drink_cola_cherry_18", name:"פריגת קטן אשכוליות", img:"https://i.postimg.cc/7htZtDTS/IMG-4277-removebg-preview.png" },
+    { id:"drink_lemon_mint_19", name:"פריגת קטן תפוזים", img:"https://i.postimg.cc/G2207DPS/IMG-4278-removebg-preview.png" },
+    { id:"drink_tropical_mix_20", name:"פריגת קטן ענבים", img:"https://i.postimg.cc/d0nPj6Cy/IMG-4279-removebg-preview.png" },
+    { id:"drink_ice_tea_21", name:"נביעות פקק 500M", img:"https://i.postimg.cc/W47jfjBt/IMG-4283-removebg-preview.png" },
+    { id:"drink_pomegranate_22", name:"נביעות 500M פייה", img:"https://i.postimg.cc/wMr9cVSV/IMG-4284-removebg-preview.png" },
+    { id:"drink_cactus_23", name:"נביעות פייה 750M", img:"https://i.postimg.cc/Px3HTyrj/IMG-4285-removebg-preview.png" },
+    { id:"drink_melon_24", name:"מיי עדן פייה", img:"https://i.postimg.cc/kG2m4SBt/IMG-4287-removebg-preview.png" },
+    { id:"drink_berry_ice_25", name:"נביעות זכוכית", img:"https://i.postimg.cc/fLTsGpsC/IMG-4288-removebg-preview.png" },
+    { id:"drink_passion_ice_26", name:"נביעות בטעמים אפרסק", img:"https://i.postimg.cc/HkwCVds3/IMG-4289-removebg-preview.png" },
+    { id:"drink_mixed_fruit_27", name:"נביעות  בטעמים תפוח", img:"https://i.postimg.cc/9Q5hmrVr/IMG-4290-removebg-preview.png" },
+    { id:"drink_tonic_28", name:"נביעות בטעמים ענבים", img:"https://i.postimg.cc/MKjwJ1CC/IMG-4291-removebg-preview.png" },
+    { id:"drink_cola_classic", name:"פחית קולה רגיל", img:"https://i.postimg.cc/3xYfjJ4c/IMG-4235-removebg-preview.png" },
+    { id:"drink_014_passion_gold", name:"פחית קולה זירו", img:"https://i.postimg.cc/Cx7PcTbL/IMG-4311-removebg-preview.png" },
+    { id:"drink_peach_spark", name:"אלוורה ענבים קטן", img:"https://i.postimg.cc/7ZK9g1y5/IMG-4295-removebg-preview.png" },
+    { id:"drink_lemon_zero", name:"אלוורה אפרסק קטן", img:"https://i.postimg.cc/j2yvNGsT/IMG-4296-removebg-preview.png" },
+    { id:"drink_mango_fresh", name:"פחית ספרינג תות בננה", img:"https://i.postimg.cc/02dcNRWd/IMG-4300-removebg-preview.png" },
+    { id:"drink_005_green_apple", name:"פחית ספרינג תפוחים", img:"https://i.postimg.cc/Yqwdkq3C/IMG-4301-removebg-preview.png" },
+    { id:"drink_006_grape_classic", name:"פחית ספרינג אפרסק", img:"https://i.postimg.cc/rpphbn9G/IMG-4303-removebg-preview.png" },
+    { id:"drink_060_choco_milk", name:"פחית ספרינג ענבים", img:"https://i.postimg.cc/x1fgJxBr/IMG-4364-removebg-preview.png" },
+    { id:"drink_007_water_spark", name:"פחית ספרינג סברס", img:"https://i.postimg.cc/05SVLJ74/IMG-4304-removebg-preview.png" },
+    { id:"drink_008_energy_red", name:"פחית ספרייט רגיל", img:"https://i.postimg.cc/XJGsNrmp/IMG-4305-removebg-preview.png" },
+    { id:"drink_009_energy_blue", name:"פחית ספרייט זירו", img:"https://i.postimg.cc/L5PQDJ3r/IMG-4306-removebg-preview.png" },
+    { id:"drink_010_cola_vanilla", name:"פנטה אקסוטי (ירוקה)", img:"https://i.postimg.cc/RVrDFTM9/IMG-4307-removebg-preview.png" },
+    { id:"drink_011_cola_cherry", name:"פנטה תפוזים (כתום)", img:"https://i.postimg.cc/MGrs87sC/IMG-4308-removebg-preview.png" },
+    { id:"drink_012_pineapple_wave", name:"פנטה תות (אדומה)", img:"https://i.postimg.cc/HW8NdN1B/IMG-4309-removebg-preview.png" },
+    { id:"drink_013_strawberry_pop", name:"פנטה ענבים (סגולה)", img:"https://i.postimg.cc/bw9M42fP/IMG-4310-removebg-preview.png" },
+    { id:"drink_015_apple_soda", name:"קולה זכוכית רגיל", img:"https://i.postimg.cc/YCHZXzV8/IMG-4313-removebg-preview.png" },
+    { id:"drink_016_lemon_mint", name:"קולה זכוכית זירו", img:"https://i.postimg.cc/PJvQH0LZ/IMG-4314-removebg-preview.png" },
+    { id:"drink_017_watermelon_cool", name:"סודה NORDIC (כחול)", img:"https://i.postimg.cc/FscwgBP7/IMG-4316-removebg-preview.png" },
+    { id:"drink_061_herbal_tea", name:"סודה NORDIC ירוק", img:"https://i.postimg.cc/VN4RWqQS/IMG-4365-removebg-preview.png" },
+    { id:"drink_018_tropical_mix", name:"סודה טמפו זכוכית", img:"https://i.postimg.cc/nLn2md5b/IMG-4317-removebg-preview.png" },
+    { id:"drink_019_ice_tea", name:"סודה טמפו ליים", img:"https://i.postimg.cc/nVN6mJGy/IMG-4318-removebg-preview.png" },
+    { id:"drink_020_pomegranate", name:"סודה schweppes זכוכית", img:"https://i.postimg.cc/Nf1PrrMX/IMG-4319-removebg-preview.png" },
+    { id:"drink_021_cactus", name:"שוואפס בטעמים אפרסק", img:"https://i.postimg.cc/JzVPr75h/IMG-4320-removebg-preview.png" },
+    { id:"drink_062_lemonade_spark", name:"שוואפס בטעמים פירות יער", img:"https://i.postimg.cc/XqtxynMQ/IMG-4366-removebg-preview.png" },
+    { id:"drink_022_melon", name:"שוואפס בטעמים למונייד", img:"https://i.postimg.cc/52LKLQ2v/IMG-4322-removebg-preview.png" },
+    { id:"drink_023_berry_ice", name:"שוואפס בטעמים תפוחים", img:"https://i.postimg.cc/vZrXcR0t/IMG-4323-removebg-preview.png" },
+    { id:"drink_024_passion_ice", name:"שוואפס בטעמים תות ליים", img:"https://i.postimg.cc/RFsg4cgr/IMG-4324-removebg-preview.png" },
+    { id:"drink_063_orange_zero", name:"שוואפס בטעמים ענבים", img:"https://i.postimg.cc/pXg1mJRR/IMG-4367-removebg-preview.png" },
+    { id:"drink_025_peach_light", name:"שוואפס בטעמים לימונדה וורודה", img:"https://i.postimg.cc/mDbnbZR9/IMG-4326-removebg-preview.png" },
+    { id:"drink_026_grapefruit", name:"פריגת זכוכית תפוזים", img:"https://i.postimg.cc/3NknRdqk/IMG-4327-removebg-preview.png" },
+    { id:"drink_027_cherry_kick", name:"פריגת זכוכית ענבים", img:"https://i.postimg.cc/bv0McSX8/IMG-4328-removebg-preview.png" },
+    { id:"drink_028_lime_spark", name:"פריגת זכוכית תפוחים", img:"https://i.postimg.cc/RFVgkPQQ/IMG-4329-removebg-preview.png" },
+    { id:"drink_029_blueberry", name:"פריגת זכוכית תות בננה", img:"https://i.postimg.cc/6qPbLdZV/IMG-4330-removebg-preview.png" },
+    { id:"drink_030_mixed_fruit", name:"פריגת זכוכית אשכוליות", img:"https://i.postimg.cc/xTqWJdmy/IMG-4331-removebg-preview.png" },
+    { id:"drink_031_lemon_classic", name:"מיי עדן (שישיות מים)", img:"https://i.postimg.cc/023hpqdg/IMG-4332-removebg-preview.png" },
+    { id:"drink_032_tonic", name:"אלוורה גדול מלון", img:"https://i.postimg.cc/Kjpwq66M/IMG-4333-removebg-preview.png" },
+    { id:"drink_033_grape_zero", name:"אלוורה גדול תפוחים", img:"https://i.postimg.cc/ZKRh8cGN/IMG-4334-removebg-preview-2.png" },
+    { id:"drink_034_pear_twist", name:"אלוורה קטן אפרסק", img:"https://i.postimg.cc/hG9FD3dk/IMG-4336-removebg-preview.png" },
+    { id:"drink_064_grape_soda", name:"אלוורה גדול ענבים", img:"https://i.postimg.cc/wMjnkqGz/IMG-4368-removebg-preview.png" },
+    { id:"drink_035_berry_punch", name:"פיוזטי גדול פסיפלורה", img:"https://i.postimg.cc/zGHZMfXX/IMG-4337-removebg-preview.png" },
+    { id:"drink_036_orange_classic", name:"פיוזטי גדול אפרסק", img:"https://i.postimg.cc/YScKwwhN/IMG-4338-removebg-preview.png" },
+    { id:"drink_037_apricot", name:"פיוזטי גדול אבטיח", img:"https://i.postimg.cc/T3BGYDHD/IMG-4339-removebg-preview.png" },
+    { id:"drink_038_lychee", name:"פיוזטי גדול פירות יער", img:"https://i.postimg.cc/ncRpg54T/IMG-4340-removebg-preview.png" },
+    { id:"drink_039_cola_free", name:"פיוזטי גדול ענבים", img:"https://i.postimg.cc/FzFXng12/IMG-4341-removebg-preview.png" },
+    { id:"drink_040_vanilla_cream", name:"פיוזטי גדול  אננס", img:"https://i.postimg.cc/mgPBswV4/IMG-4342-removebg-preview.png" },
+    { id:"drink_041_cola_lime", name:"ספרייט גדול", img:"https://i.postimg.cc/bvbPGwKF/IMG-4343-removebg-preview.png" },
+    { id:"drink_042_pink_grape", name:"ספרייט גדול זירו", img:"https://i.postimg.cc/qqmHfh3g/IMG-4344-removebg-preview.png" },
+    { id:"drink_043_mojito_mock", name:"בטעמים גדול אפרסק", img:"https://i.postimg.cc/zDkJS33s/IMG-4345-removebg-preview.png" },
+    { id:"drink_044_choco_malt", name:"בטעמים גדול ענבים", img:"https://i.postimg.cc/d12JfV6T/IMG-4346-removebg-preview.png" },
+    { id:"drink_045_kola_gold", name:"בטעמים גדול מנגו", img:"https://i.postimg.cc/cHysTnRS/IMG-4347-removebg-preview.png" },
+    { id:"drink_046_forest_berries", name:"בטעמים גדול אבטיח", img:"https://i.postimg.cc/66VQjYb1/IMG-4348-removebg-preview.png" },
+    { id:"drink_047_ginger_ale", name:"בטעמים גדול תפוח", img:"https://i.postimg.cc/tgVqh5Vk/IMG-4349-removebg-preview.png" },
+    { id:"drink_048_black_currant", name:"פנטה גדול ענבים", img:"https://i.postimg.cc/13dRnT44/IMG-4350-removebg-preview.png" },
+    { id:"drink_049_sour_cherry", name:"פנטה גדול כתום", img:"https://i.postimg.cc/TwgPX9d1/IMG-4351-removebg-preview.png" },
+    { id:"drink_050_passion_blast", name:"פריגת גדול ענבים", img:"https://i.postimg.cc/tC24y7j3/IMG-4352-removebg-preview.png" },
+    { id:"drink_051_lime_mint", name:"פריגת גדול תות בננה", img:"https://i.postimg.cc/YSJSVVwT/IMG-4353-removebg-preview.png" },
+    { id:"drink_052_banana_shake", name:"פריגת גדול תפוזים", img:"https://i.postimg.cc/W4D35VxM/IMG-4355-removebg-preview.png" },
+    { id:"drink_053_melon_freeze", name:"פריגת גדול אשכוליות", img:"https://i.postimg.cc/5N360nwF/IMG-4357-removebg-preview.png" },
+    { id:"drink_054_cranberry", name:"פריגת גדול מנגו", img:"https://i.postimg.cc/k5DVLKRR/IMG-4358-removebg-preview.png" },
+    { id:"drink_055_coconut_water", name:"פריגת גדול אפרסק", img:"https://i.postimg.cc/ZRdW5mcT/IMG-4359-removebg-preview.png" },
+    { id:"drink_056_pink_lemonade", name:"סודה גדול KINLEY", img:"https://i.postimg.cc/VvPdShGX/IMG-4360-removebg-preview.png" },
+    { id:"drink_057_apple_spice", name:"קולה גדול רגיל", img:"https://i.postimg.cc/jS32623x/IMG-4361-removebg-preview.png" },
+    { id:"drink_058_mandarin", name:"קולה גדול זירו", img:"https://i.postimg.cc/XqKX9gmm/IMG-4362-removebg-preview.png" },
+    { id:"drink_059_colombian_coffee", name:"אלוורה גדול אפרסק", img:"https://i.postimg.cc/253wTqz2/IMG-4363-removebg-preview.png" },
+  ],
+  snacks: [
+    { id:"snack_crunch1", name:"הפריכיות הטעימות", img:"https://i.postimg.cc/V6Zsdh9z/1000086009.png" },
+    { id:"snack_crunch2", name:"בסלי גריל קטן", img:"https://i.postimg.cc/T1SPHsht/1000x1000-1000x563-600x600-2048x2048-30.png" },
+    { id:"snack_choco1", name:"תפוציס שמנת בצל גדול", img:"https://i.postimg.cc/G2XtvtRw/2025-03-06-T21-31-28-871-Z.png" },
+    { id:"snack_choco2", name:"ביסלי במבה MIX ברביקיו", img:"https://i.postimg.cc/9XNzMD1y/2025-08-01-T01-47-37-874-Z.png" },
+    { id:"snack_cereal1", name:"ביסלי במבה MIX בצל", img:"https://i.postimg.cc/MKCT7gCT/2025-08-03-T18-21-49-492-Z.png" },
+    { id:"snack_cereal2", name:"בסלי במבה MIX גריל", img:"https://i.postimg.cc/L8jsNNSV/2025-08-03-T18-23-10-683-Z.png" },
+    { id:"snack_salty1", name:"דוריטוס טיקה מסאלא", img:"https://i.postimg.cc/sDQxZ30q/2025-09-04-T11-18-58-431-Z.png" },
+    { id:"snack_salty2", name:"במבה אייס קפה", img:"https://i.postimg.cc/Bbt6p3Z8/464x464-origin.png" },
+    { id:"snack_salty3", name:"ציטוס פיצה (צהוב)", img:"https://i.postimg.cc/LsR87L6F/465108d7c3d45314bbac78c4aa773ffb.png" },
+    { id:"snack_salty4", name:"תופציפס שמנת בצל קטן", img:"https://i.postimg.cc/wBVjdM7y/5200786-4.png" },
+    { id:"snack_salty5", name:"ציטוס כאפה (קטשופ)", img:"https://i.postimg.cc/D0Wvsc5L/52078956.png" },
+    { id:"snack_peanut1", name:"תפוציפס טבעי קטן", img:"https://i.postimg.cc/pTLXVvF0/5686513.png" },
+    { id:"snack_peanut2", name:"ציטוס גבינה (תכלת)", img:"https://i.postimg.cc/PJBtM8Fc/650278965.png" },
+    { id:"snack_peanut3", name:"תפוציפס טבעי ענק", img:"https://i.postimg.cc/B6St8DdB/6f638d24fc33e02ae5c40802ec71ad49.png" },
+    { id:"snack_peanut4", name:"תפוציפס קראנצ טבעי", img:"https://i.postimg.cc/wTmxj01d/7290008745239.png" },
+    { id:"snack_peanut5", name:"תפוציפב קראנצ מקסיקני", img:"https://i.postimg.cc/Dw3vJLG4/7290008753111.png" },
+    { id:"snack_peanut6", name:"דוריטוס גריל (קטן)", img:"https://i.postimg.cc/HLpT3mBp/7290008753364.png" },
+    { id:"snack_peanut7", name:"דוריטוס טבעי (קטן)", img:"https://i.postimg.cc/XYKVwqKH/7290008753388-324x324.png" },
+    { id:"snack_peanut8", name:"דוריטוס חריף אש ", img:"https://i.postimg.cc/xdtn4Z4L/7290010117864-jpg.png" },
+    { id:"snack_peanut9", name:"מרשמלו כרמית", img:"https://i.postimg.cc/4dysk1Dq/7290019644330.png" },
+    { id:"snack_peanut10", name:"דוריטוס נודלס סצ'ואן", img:"https://i.postimg.cc/kD3mSP2P/7290110553548.png" },
+    { id:"snack_peanut11", name:"ציטוס צ'דר חלפיניו", img:"https://i.postimg.cc/C12YFqY1/7290110553623.png" },
+    { id:"snack_apropo", name:"אפרופו קלאסי", img:"https://i.postimg.cc/gj6pr2kK/apropo-salty-snack-2.png" },
+    { id:"snack_mix1", name:" ציטוס גבינה (אדום)", img:"https://i.postimg.cc/2Sx1C2tS/c04131600c76aeac7dbdac254fcbae7e.png" },
+    { id:"snack_mix2", name:"פופקורן עילית", img:"https://i.postimg.cc/J7yHj3sp/Cat-490247-263.png" },
+    { id:"snack_mix3", name:"ביסלי ברביקיו קטן", img:"https://i.postimg.cc/ncBsPHY7/Cat-495623-3503.png" },
+    { id:"snack_mix4", name:"אפרופו איטלקי", img:"https://i.postimg.cc/FF2dpfcN/download.png" },
+    { id:"snack_mix5", name:"ביסלי פלאפל (קטן)", img:"https://i.postimg.cc/y8KJqwvG/images.png" },
+    { id:"snack_mix6", name:"ביסלי PARTY MIX ׁ(סגול)", img:"https://i.postimg.cc/QtvtfPF0/Image-To-Stl-com-12372997-7290111568206-1-Enlarge.png" },
+    { id:"snack_mix7", name:"אפרופו שמנת בצל (סגול)", img:"https://i.postimg.cc/9f8z7zC3/Image-To-Stl-com-12577767-7290118423669-Enlarge.png" },
+    { id:"snack_mix8", name:"רפרופו חמוץ חריף (ירוק)", img:"https://i.postimg.cc/Hn5LR25H/Image-To-Stl-com-12622581-729118428770-Enlarge.png" },
+    { id:"snack_mix9", name:"דובונים", img:"https://i.postimg.cc/g0knj39q/Image-To-Stl-com-6901268-7290000066264-1-Enlarge.png" },
+    { id:"snack_mix10", name:"בייגלה אוסם ", img:"https://i.postimg.cc/50Xyq12X/Image-To-Stl-com-6901617-7290000076133-Enlarge.png" },
+    { id:"snack_mix11", name:"ביסלי פיצה (קטן) ", img:"https://i.postimg.cc/SxmK1cKF/large.png" },
+    { id:"snack_mix12", name:"במבה אוסם ", img:"https://i.postimg.cc/J7Bts1Fg/original-42467.png" },
+    { id:"snack_mix13", name:"תפוציפס קראנצ גריל", img:"https://i.postimg.cc/nhThyMss/Product-st-43.png" },
+    { id:"snack_mix14", name:"במבה פרו PRO", img:"https://i.postimg.cc/Yq69xdMz/small.png" },
+    { id:"snack_sour1", name:"דוריטוס ירוק קטן", img:"https://i.postimg.cc/mrDgBRMm/Sweet-Sour3-1.png" },
+    { id:"snack_sour2", name:"ביסלי בצל (קטן)", img:"https://i.postimg.cc/Gp5hpNxd/image.png" },
+    { id:"snack_sour3", name:"במבה נוגט", img:"https://i.postimg.cc/8c8pR6YY/image.png" },
+    { id:"snack_pack1", name:"ביסלי ברביקיו גדול", img:"https://i.postimg.cc/1R659vn1/55.png" },
+    { id:"snack_pack2", name:"ביסלי בצל (גדול)", img:"https://i.postimg.cc/RhcMX05Z/200.png" },
+    { id:"snack_pack3", name:"ביסלי גריל (גדול)", img:"https://i.postimg.cc/4Ng4npV7/200.png" },
+    { id:"snack_pack4", name:"דוריטוס צהוב (גדול)", img:"https://i.postimg.cc/Gm3cxrMb/185.png" },
+    { id:"snack_pack5", name:"פרינגלס סגול", img:"https://i.postimg.cc/wTQqN3QW/image.png" },
+    { id:"snack_pack6", name:"פרינגלס אדום", img:"https://i.postimg.cc/Mpszs44V/1.png" },
+    { id:"snack_pack7", name:"פרינגלס ירוק", img:"https://i.postimg.cc/wB7gn28P/image.png" },
+    { id:"snack_pack8", name:"ציטוס שמנת בצל", img:"https://i.postimg.cc/TPFfxbTP/1.png" },
+  ],
+  choco: [
+    { id:"tb1", name:"בקרוב", img:"https://i.postimg.cc/L5LVRxRQ/Photoroom-20250917-085117.jpg" },
+  ]
+};
+
+/* ===== שמירה ל-8 שעות ===== */
+const SAVE_KEY="invDraftV1", PICK_KEY="invPickV1", TTL_HOURS=8, ttlMs=TTL_HOURS*60*60*1000;
+const nowMs=()=>Date.now();
+let state={cat:null,i:0,entries:{},skipped:{},startedAt:null,lastUpdate:null};
+let pickState={rows:{},lastUpdate:null};
+function saveDraft(){state.lastUpdate=nowMs();localStorage.setItem(SAVE_KEY,JSON.stringify(state));}
+function loadDraft(){const raw=localStorage.getItem(SAVE_KEY);if(!raw)return null;try{const o=JSON.parse(raw);if(!o.lastUpdate||nowMs()-o.lastUpdate>ttlMs)return null;return o;}catch{return null;}}
+function clearDraft(){localStorage.removeItem(SAVE_KEY);}
+function savePick(){pickState.lastUpdate=nowMs();localStorage.setItem(PICK_KEY,JSON.stringify(pickState));}
+function loadPick(){const raw=localStorage.getItem(PICK_KEY);if(!raw)return null;try{const o=JSON.parse(raw);if(!o.lastUpdate||nowMs()-o.lastUpdate>ttlMs)return null;return o;}catch{return null;}}
+function clearPick(){localStorage.removeItem(PICK_KEY);}
+
+/* ===== DOM ===== */
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const home=$("#home"),flow=$("#flow"),pickup=$("#pickup"),viewport=$("#viewport");
+const idxEl=$("#idx"),totalEl=$("#total"),barEl=$("#bar");
+const prevBtn=$("#prevBtn"),hint=$("#hint");
+const exitBtn=$("#exitBtn"),exitModal=$("#exitModal"),doExit=$("#doExit"),saveOnly=$("#saveOnly"),stay=$("#stay");
+const savedModal=$("#savedModal"),savedOk=$("#savedOk");
+const padModal=$("#padModal"),pad=$("#pad"),otherWrap=$("#otherWrap"),otherInput=$("#otherInput"),otherOk=$("#otherOk"),padCancel=$("#padCancel");
+const resumeModal=$("#resumeModal"),resumeYes=$("#resumeYes"),resumeNo=$("#resumeNo");
+const pickTable=$("#pickTable"),loading=$("#loading"),percent=$("#percent"),loadbar=$("#loadbar");
+const doneBtn=$("#doneBtn");
+
+/* ===== בניית נומריק-פד ===== */
+function buildPad(){
+  pad.innerHTML="";
+  for(let n=1;n<=9;n++){
+    const b=document.createElement("button");
+    b.type="button";b.className="num";b.textContent=String(n);
+    b.addEventListener("click",()=>chooseQty(n));
+    pad.appendChild(b);
+  }
+  const other=document.createElement("button");
+  other.type="button";other.className="num alt";other.textContent="אחר";
+  other.addEventListener("click",()=>{otherWrap.style.display="flex";otherInput.value="";otherInput.focus();});
+  pad.appendChild(other);
+  const crate=document.createElement("button");
+  crate.type="button";crate.className="num crate";crate.textContent="ארגז";
+  crate.addEventListener("click",()=>chooseQty("crate"));
+  pad.appendChild(crate);
+}
+
+/* ===== התחלת קטגוריה ===== */
+function startCategory(catKey){
+  state.cat=catKey;state.i=0;state.entries={};state.skipped={};state.startedAt=nowMs();state.lastUpdate=nowMs();
+  saveDraft();
+  home.style.display="none";pickup.style.display="none";flow.style.display="flex";
+  renderStep(true);
+}
+
+/* ===== בניית כרטיס מוצר ===== */
+function buildCard(item){
+  const formattedName=item.name.replace(/\(([^)]+)\)/g,'<span class="highlight-paren">($1)</span>');
+  const card=document.createElement("article");
+  card.className="card enter-right";
+  card.innerHTML=`
+    <div class="media"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+    <div class="name">${formattedName}</div>
+    <div class="actions">
+      <button type="button" class="btn fill" data-act="skip">מלא / אין</button>
+      <button type="button" class="btn milui" data-act="milui">מילוי</button>
+    </div>
+  `;
+  card.querySelector('[data-act="skip"]').addEventListener("click",()=>{state.skipped[item.id]=true;saveDraft();advance(+1,"skip");});
+  card.querySelector('[data-act="milui"]').addEventListener("click",()=>{otherWrap.style.display="none";openModal(padModal);});
+  return card;
+}
+
+/* ===== טעינת תמונות מראש ===== */
+function preloadNextImages(startIdx){
+  const arr=catalog[state.cat];
+  for(let j=1;j<=4;j++){
+    const idx=startIdx+j;
+    if(idx<arr.length){
+      const img=new Image();
+      img.src=arr[idx].img;
+    }
+  }
+}
+
+/* === עזר: הפקת טווחי דילוג מרובים מהקטלוג (תומך בכמה start/end) === */
+function getSkipRanges(arr){
+  const ranges = [];
+  let openStart = null;
+  for(let i=0;i<arr.length;i++){
+    const it = arr[i];
+    if(it.skipStart){ openStart = i; }
+    if(it.skipEnd && openStart !== null){
+      ranges.push([openStart, i]);
+      openStart = null;
+    }
+  }
+  // אם היה start בלי end – נסגור עד סוף הקטגוריה (סובלני)
+  if(openStart !== null){
+    ranges.push([openStart, arr.length - 1]);
+  }
+  return ranges;
+}
+
+/* ===== הצגת שלב (תומך בריבוי טווחי דילוג) ===== */
+function renderStep(first=false,dir="right"){
+  const arr=catalog[state.cat];
+  const total=arr.length;
+  const currentItem=arr[state.i];
+
+  // מונה ופס התקדמות
+  idxEl.textContent=state.i+1;
+  totalEl.textContent=total;
+  barEl.style.width=Math.round(((state.i+1)/total)*100)+"%";
+
+  // כרטיס
+  viewport.innerHTML="";
+  const card=buildCard(currentItem);
+  card.classList.remove("enter-right","enter-left");
+  card.classList.add(dir==="right"?"enter-right":"enter-left");
+  viewport.appendChild(card);
+  prevBtn.classList.toggle("disabled",state.i===0);
+
+  // פרה-לואד
+  preloadNextImages(state.i);
+
+  // כפתור "דלג על הקטגוריה הזאת" – תמיכה בריבוי טווחים
+  const skipBtn=document.getElementById("skipCategoryBtn");
+  const ranges = getSkipRanges(arr); // [[start,end], ...]
+  const currentRange = ranges.find(([s,e]) => state.i>=s && state.i<=e);
+
+  if(currentRange){
+    skipBtn.style.display="block";
+    // שינוי טקסט דינמי לפי skipLabel
+const startItem = arr[currentRange[0]];
+if (startItem.skipLabel) {
+  skipBtn.textContent = startItem.skipLabel;
+} else {
+  skipBtn.textContent = "דלג על קטגוריה זו";
+}
+
+    skipBtn.onclick = ()=>{
+      const [s,e] = currentRange;
+      const step = (e+1) - state.i; // דילוג ישירות אל אחרי הסוגר
+      advance(step); // משתמש בפונקציה שלך – תטפל גם במעבר לסוף קטגוריה
+    };
+  }else{
+    skipBtn.style.display="none";
+    skipBtn.onclick = null;
+  }
+}
+
+
+/* ===== התקדמות בין כרטיסים ===== */
+function advance(step){
+  const arr=catalog[state.cat];
+  const next=state.i+step;
+  if(next<0)return;
+  if(next>=arr.length){
+    // כאן נכניס את ההוספה החדשה של מוצר חסר במקום טבלה ישירה
+    showMissingProductsPopup(); // ✳️ פונקציה חדשה
+    saveDraft();
+    return;
+  }
+  const current=viewport.querySelector(".card");
+  if(current){current.classList.add(step>0?"exit-left":"exit-right");}
+  state.i=next;saveDraft();
+  setTimeout(()=>renderStep(false,step>0?"right":"left"),250);
+}
+
+/* === מודאלים ל"מוצרים חסרים" - נוצרים דינמית כדי שלא תצטרך לגעת ב-HTML === */
+let missingModal, missingYes, missingNo;
+let addManualModal, manualName, manualNext, manualCancel;
+let afterManualModal, addAnother, manualDone;
+let manualMode = false;   // אנחנו באמצע הוספת מוצר ידני ובחירת כמות
+let pendingManual = null; // { name }
+
+function createMissingModals(){
+  if (missingModal) return; // כבר נוצר
+  const app = document.querySelector("#app");
+
+  // מודאל 1: יש מוצרים שלא הופיעו?
+  const m1 = document.createElement("div");
+  m1.className = "modal"; m1.id = "missingModal";
+  m1.innerHTML = `
+    <div class="dialog">
+      <h3>יש מוצרים שלא הופיעו ברשימה?</h3>
+      <div style="opacity:.85">תוכל להוסיף אותם ידנית לטבלה של היום.</div>
+      <div class="row">
+        <button class="btn ok" id="missingYes">כן</button>
+        <button class="btn outline" id="missingNo">לא</button>
+      </div>
+    </div>`;
+  app.appendChild(m1);
+
+  // מודאל 2: הוספת מוצר ידני (שם)
+  const m2 = document.createElement("div");
+  m2.className = "modal"; m2.id = "addManualModal";
+  m2.innerHTML = `
+    <div class="dialog">
+      <h3>הוסף מוצר חסר</h3>
+      <input id="manualName" type="text" placeholder="שם מוצר (למשל: קולה זירו)"
+        style="width:100%;min-height:42px;border-radius:10px;padding:10px;background:#061016;color:#fff;border:1px solid rgba(0,231,255,.25);margin-top:8px" />
+      <div class="row" style="margin-top:10px">
+        <button class="btn ok" id="manualNext">מילוי</button>
+        <button class="btn outline" id="manualCancel">ביטול</button>
+      </div>
+    </div>`;
+  app.appendChild(m2);
+
+  // מודאל 3: לאחר הוספה – עוד מוצר או סיום
+  const m3 = document.createElement("div");
+  m3.className = "modal"; m3.id = "afterManualModal";
+  m3.innerHTML = `
+    <div class="dialog">
+      <h3>להוסיף עוד מוצר?</h3>
+      <div class="row">
+        <button class="btn ok" id="addAnother">להוסיף עוד מוצר</button>
+        <button class="btn outline" id="manualDone">סיימתי</button>
+      </div>
+    </div>`;
+  app.appendChild(m3);
+
+  // קישורי DOM
+  missingModal = m1; addManualModal = m2; afterManualModal = m3;
+  missingYes = document.getElementById("missingYes");
+  missingNo  = document.getElementById("missingNo");
+  manualName = document.getElementById("manualName");
+  manualNext = document.getElementById("manualNext");
+  manualCancel = document.getElementById("manualCancel");
+  addAnother = document.getElementById("addAnother");
+  manualDone = document.getElementById("manualDone");
+
+  // מאזינים
+  missingNo.addEventListener("click", ()=>{
+    closeModal(missingModal);
+    continueToPickupTable();
+  });
+  missingYes.addEventListener("click", ()=>{
+    closeModal(missingModal);
+    manualName.value = "";
+    openModal(addManualModal);
+    setTimeout(()=>manualName.focus(), 10);
+  });
+  manualCancel.addEventListener("click", ()=>{
+    closeModal(addManualModal);
+    openModal(missingModal);
+  });
+  manualNext.addEventListener("click", ()=>{
+    const name = manualName.value.trim();
+    if(!name){ manualName.focus(); return; }
+    pendingManual = { name };
+    manualMode = true;
+    closeModal(addManualModal);
+    otherWrap.style.display = "none";
+    openModal(padModal); // משתמשים בנומריק-פד הקיים
+  });
+  addAnother.addEventListener("click", ()=>{
+    closeModal(afterManualModal);
+    manualName.value = "";
+    openModal(addManualModal);
+    setTimeout(()=>manualName.focus(), 10);
+  });
+  manualDone.addEventListener("click", ()=>{
+    closeModal(afterManualModal);
+    continueToPickupTable();
+  });
+}
+
+function showMissingProductsPopup(){
+  // ניצור את המודאלים אם טרם קיימים
+  createMissingModals();
+  openModal(missingModal);
+}
+
+function continueToPickupTable(){
+  showLoading(()=>{
+    buildPickupTable();
+    flow.style.display="none";
+    pickup.style.display="flex";
+  });
+}
+
+/* ===== בחירת כמות (החלפה: מוסיף תמיכה בפריט ידני) ===== */
+function ensureManualArray(){ if(!state.manual) state.manual = []; }
+
+function chooseQty(val){
+  // מצב מוצר ידני
+  if (manualMode && pendingManual){
+    ensureManualArray();
+    const id = "manual_" + (state.manual.length + 1) + "_" + Date.now();
+    // נשמור גם ב-state.manual (רשימת פריטים ידניים) וגם ב-state.entries (מספר לחישוב הטבלה)
+    state.manual.push({ id, name: pendingManual.name, qty: val });
+    state.entries[id] = val;
+    saveDraft();
+
+    // איפוס מצב ידני + מעבר למסך "עוד מוצר / סיימתי"
+    manualMode = false;
+    pendingManual = null;
+    closeModal(padModal);
+    otherWrap.style.display = "none";
+    openModal(afterManualModal);
+    return;
+  }
+
+  // מצב רגיל (מהקטלוג)
+  const item = catalog[state.cat][state.i];
+  state.entries[item.id] = val;
+  saveDraft();
+  closeModal(padModal);
+  otherWrap.style.display = "none";
+  advance(+1);
+}
+
+/* מאזינים קיימים */
+otherOk.addEventListener("click", ()=>{
+  const v = otherInput.value.replace(/\D+/g,"");
+  if(!v){ otherInput.focus(); return; }
+  chooseQty(Number(v));
+});
+padCancel.addEventListener("click", ()=>{
+  closeModal(padModal);
+  otherWrap.style.display="none";
+});
+
+/* ===== “הקודם” – לחיצה רציפה (כמו שהיה) ===== */
+let clickCount=0, holdTimer=null, stepper=null, touchStartTs=0, holdArmed=false;
+function startHold(){ if(prevBtn.classList.contains("disabled")) return; holdArmed=true; holdTimer=setTimeout(()=>{ stepper=setInterval(()=>{ if(state.i===0) return stopHold(); advance(-1); }, 220); }, 350); }
+function stopHold(){ clearTimeout(holdTimer); holdTimer=null; holdArmed=false; clearInterval(stepper); stepper=null; }
+prevBtn.addEventListener("mousedown", startHold);
+prevBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); touchStartTs=Date.now(); startHold(); }, {passive:false});
+["mouseup","mouseleave","touchend","touchcancel"].forEach(ev=>prevBtn.addEventListener(ev, (evName=>{ return (e)=>{ if(evName==="touchend"){ e.preventDefault(); const quick=Date.now()-touchStartTs<300; const notHolding=!stepper && holdArmed; if(quick && notHolding && !prevBtn.classList.contains("disabled")){ advance(-1); clickCount++; if(clickCount===2){ hint.classList.add("show"); } } } stopHold(); }; })(ev)));
+prevBtn.addEventListener("click", ()=>{ if(prevBtn.classList.contains("disabled")) return; advance(-1); clickCount++; if(clickCount===2){ hint.classList.add("show"); } });
+hint.addEventListener("click", ()=>{ hint.classList.remove("show"); });
+
+/* ===== מודאלים קיימים ===== */
+function openModal(m){ m.classList.add("show"); }
+function closeModal(m){ m.classList.remove("show"); }
+
+exitBtn.addEventListener("click", ()=> openModal(exitModal));
+stay.addEventListener("click", ()=> closeModal(exitModal));
+doExit.addEventListener("click", ()=>{ clearDraft(); clearPick(); closeModal(exitModal); showHome(); });
+saveOnly.addEventListener("click", ()=>{ saveDraft(); savePick(); closeModal(exitModal); openModal(savedModal); });
+savedOk.addEventListener("click", ()=>{ closeModal(savedModal); });
+
+/* ===== טבלת איסוף (החלפה: מוסיף גם פריטים ידניים) ===== */
+function buildPickupTable(){
+  pickTable.innerHTML="";
+  const base = catalog[state.cat] || [];
+  const items = [...base];
+
+  // הוספת פריטים ידניים (רגילים לגמרי בטבלה)
+  if (state.manual && state.manual.length){
+    state.manual.forEach(m => items.push({ id: m.id, name: m.name }));
+  }
+
+  const prevPick = loadPick(); if(prevPick) pickState = prevPick;
+
+  items.forEach(it=>{
+    if(state.skipped[it.id]) return;
+    const val = state.entries[it.id]; if(val===undefined) return;
+
+    const tr=document.createElement("tr"); tr.className="row-tr";
+    const td1=document.createElement("td"); td1.className="cell";
+    const badge=document.createElement("span"); badge.className="qty-badge"+(val==='crate'?" crate":"");
+    badge.textContent=(val==='crate')?"ארגז":String(val);
+    td1.appendChild(badge);
+
+    const td2=document.createElement("td"); td2.className="cell"; td2.textContent=it.name;
+
+    const td3=document.createElement("td"); td3.className="cell";
+    const ok=document.createElement("button"); ok.className="icon-btn okbtn"; ok.textContent="✅";
+    const no=document.createElement("button"); no.className="icon-btn nobtn"; no.textContent="❌";
+    td3.append(ok,no); tr.append(td1,td2,td3); pickTable.appendChild(tr);
+
+    const mode=(pickState.rows[it.id]||"");
+    if(mode==='on') tr.classList.add("on"); 
+    if(mode==='off') tr.classList.add("off");
+
+    ok.addEventListener("click", ()=>{ tr.classList.add("on"); tr.classList.remove("off"); pickState.rows[it.id]='on'; savePick(); });
+    no.addEventListener("click", ()=>{ tr.classList.add("off"); tr.classList.remove("on"); pickState.rows[it.id]='off'; savePick(); });
+  });
+}
+
+/* ===== כפתור "סיימתי" ===== */
+doneBtn.addEventListener("click", ()=>{ clearDraft(); clearPick(); showHome(); });
+
+/* ===== מסך טעינה (כמו שהיה) ===== */
+function showLoading(done){
+  loading.style.display="flex";
+  const DURATION=2000;
+  let start=null;
+  function step(ts){
+    if(!start) start=ts;
+    const p=Math.min(1,(ts-start)/DURATION);
+    const pr=Math.round(p*100);
+    loadbar.style.width=pr+"%"; percent.textContent=pr+"%";
+    if(p<1){ requestAnimationFrame(step); }
+    else { setTimeout(()=>{ loading.style.display="none"; done&&done(); }, 60); }
+  }
+  requestAnimationFrame(step);
+}
+
+/* ===== מסכים ===== */
+function showHome(){ home.style.display="flex"; flow.style.display="none"; pickup.style.display="none"; }
+function maybeOfferResume(){
+  const d=loadDraft(); if(!d){ showHome(); return; }
+  state=d; openModal(resumeModal);
+  resumeYes.addEventListener("click", ()=>{ closeModal(resumeModal); home.style.display="none"; pickup.style.display="none"; flow.style.display="flex"; renderStep(true); }, {once:true});
+  resumeNo.addEventListener("click", ()=>{ closeModal(resumeModal); clearDraft(); showHome(); }, {once:true});
+}
+
+/* ===== אתחול ===== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  $$(".home .btn-cat").forEach(b=> b.addEventListener("click", ()=> startCategory(b.dataset.cat)));
+  buildPad(); const p=loadPick(); if(p) pickState=p; maybeOfferResume();
+});
+
+/* ===== מיקרו-רטט ===== */
+(function(){
+  let lastTouch=0;
+  document.addEventListener('touchend', function(e){
+    const now=Date.now(); if(now-lastTouch<=300){ e.preventDefault(); } lastTouch=now;
+  }, {passive:false});
+  const vibrate=ms=>{ if(navigator.vibrate) try{ navigator.vibrate(ms); }catch{} };
+  document.body.addEventListener('click', (e)=>{ const el=e.target.closest('.btn,.num,.icon-btn,.btn-cat,.prev'); if(el) vibrate(10); });
+})();
+
+/* ==== שליטה ידנית על כפתורים (זמני) ==== */
+const featureFlags = { drinks:true, snacks:true, choco:false };
+const workModal = document.getElementById("workModal");
+const workOk = document.getElementById("workOk");
+function openWorkModal(){ workModal.classList.add("show"); }
+function closeWorkModal(){ workModal.classList.remove("show"); }
+workOk.addEventListener("click", ()=>{ closeWorkModal(); showHome(); });
+$$(".home .btn-cat").forEach(b=>{
+  const key=b.dataset.cat;
+  if(!featureFlags[key]){
+    b.classList.add("disabled");
+    b.addEventListener("click",(e)=>{ e.preventDefault(); openWorkModal(); });
+  }else{
+    b.addEventListener("click",()=> startCategory(key));
+  }
+});
+
+// גרסת הסקר - מתעדכנת אוטומטית כל 3 חודשים
+const SURVEY_KEY = getDynamicVersion("surveyDone", "2025-09-20", 3);
+/* עטיפת localStorage עם Fallback ל-cookie */
+function safeSet(key, value) { try { localStorage.setItem(key, value); } catch { document.cookie = key+"="+value+"; path=/; max-age=31536000"; } }
+function safeGet(key) { try { return localStorage.getItem(key) || getCookie(key); } catch { return getCookie(key); } }
+function getCookie(name) { const m=document.cookie.match(new RegExp("(^| )"+name+"=([^;]+)")); return m?m[2]:null; }
+
+/* שליטה על מודאל הסקר */
+const surveyModal=document.getElementById("surveyModal");
+const starContainer=document.getElementById("starContainer");
+const ratingInput=document.getElementById("ratingInput");
+const feedbackWrap=document.getElementById("feedbackWrap");
+const skipBtn=document.getElementById("skipBtn");
+const sendBtn=document.getElementById("sendBtn");
+const thankModal=document.getElementById("thankModal");
+const errorModal=document.getElementById("errorModal");
+let currentRating=0;
+
+function openSurveyOnce(){ if(safeGet(SURVEY_KEY)) return; safeSet(SURVEY_KEY,"true"); openModal(surveyModal); }
+starContainer.innerHTML="";
+for(let i=1;i<=5;i++){
+  const s=document.createElement("div");
+  s.className="star"; s.dataset.value=i;
+  s.addEventListener("click",()=>{
+    currentRating=i; ratingInput.value=i; updateStars(i);
+    feedbackWrap.style.display="block"; skipBtn.style.display="inline-block"; sendBtn.disabled=false;
+  });
+  starContainer.appendChild(s);
+}
+function updateStars(val){
+  document.querySelectorAll("#starContainer .star").forEach(star=>{
+    star.classList.toggle("active", Number(star.dataset.value) <= val);
+  });
+}
+skipBtn.addEventListener("click", ()=>{ feedbackWrap.style.display="none"; skipBtn.style.display="none"; });
+document.getElementById("surveyForm").addEventListener("submit",(e)=>{
+  e.preventDefault();
+  sendBtn.disabled=true;
+  const originalText=sendBtn.textContent;
+  sendBtn.innerHTML='<span class="spinner"></span>';
+  const form=e.target;
+  const data=new FormData(form);
+  fetch(form.action,{method:"POST",body:data})
+    .then(res=>{ if(!res.ok) throw new Error("Formspree error"); return res.json(); })
+    .then(()=>{ closeModal(surveyModal); openModal(thankModal); setTimeout(()=>closeModal(thankModal),1500); })
+    .catch(()=>{ closeModal(surveyModal); openModal(errorModal); setTimeout(()=>closeModal(errorModal),2000); })
+    .finally(()=>{ sendBtn.innerHTML=originalText; sendBtn.disabled=false; });
+});
+doneBtn.addEventListener("click", ()=>{ clearDraft(); clearPick(); showHome(); openSurveyOnce(); });
+
+/* === פופאפ כרטיסיות נבחרות עם זיכרון וגרסה === */
+const NOTE_VERSION="v2";
+const cardNoteModal=document.getElementById("cardNoteModal");
+const cardNoteOk=document.getElementById("cardNoteOk");
+const dontShowAgain=document.getElementById("dontShowAgain");
+const noteItems=["excel_ten","excel_festi"];
+function shouldShowNote(id){ const key=`cardNote_${NOTE_VERSION}_${id}`; return !localStorage.getItem(key); }
+function markAsHidden(id){ const key=`cardNote_${NOTE_VERSION}_${id}`; localStorage.setItem(key,"hidden"); }
+const originalRenderStep = renderStep;
+renderStep = function(first=false,dir="right"){
+  originalRenderStep(first,dir);
+  const currentItem=catalog[state.cat][state.i];
+  if(noteItems.includes(currentItem.id) && shouldShowNote(currentItem.id)){
+    dontShowAgain.checked=false;
+    cardNoteModal.classList.add("show");
+  }
+};
+cardNoteOk.addEventListener("click", ()=>{
+  const currentItem=catalog[state.cat][state.i];
+  if(dontShowAgain.checked){ markAsHidden(currentItem.id); }
+  cardNoteModal.classList.remove("show");
+});
+
+// נועל זום עם דאבל קליק וצביטה
+document.addEventListener('gesturestart', e=>{ e.preventDefault(); });
+document.addEventListener('dblclick', e=>{ e.preventDefault(); });
+document.addEventListener('touchmove', function(e){ if(e.scale!==undefined && e.scale!==1){ e.preventDefault(); } }, {passive:false});
+
+/* ✉️ מעטפה (נשאר כבוי כברירת מחדל) */
+const showPopup=true;
+const popupVersion="1.2";
+const animationDuration=5.0;
+const SEEN_KEY=`popupSeen_v_${popupVersion}`;
+document.addEventListener("DOMContentLoaded",()=>{
+  if(!showPopup) return;
+  try{ if(localStorage.getItem(SEEN_KEY)) return; }catch(e){}
+  const scene=document.getElementById("envelopeScene");
+  const stamp=document.querySelector(".stamp");
+  const lid=document.querySelector(".env-lid-shape");
+  const letter=document.getElementById("letterCard");
+  const envSVG=document.querySelector(".envelope-svg");
+  const sparkles=document.getElementById("sparklesLayer");
+  const closeBtn=document.getElementById("popupCloseBtn");
+  const ensureGSAP=()=>new Promise(res=>{
+    if(window.gsap) return res();
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js";
+    s.onload=res;document.head.appendChild(s);
+  });
+  ensureGSAP().then(()=>{
+    scene.classList.add("active");
+    const D=animationDuration;
+    const tl=gsap.timeline({defaults:{ease:"power2.out"}});
+    tl.fromTo(envSVG,{y:"-130%",rotate:0},{y:"0%",rotate:0,duration:D*0.25,ease:"bounce.out"});
+    tl.fromTo(stamp,{opacity:0,scale:0.4,rotate:-20,y:-25},{opacity:1,scale:1,rotate:-10,y:0,duration:D*0.18,ease:"back.out(2)"});
+    tl.to(stamp,{opacity:0,duration:0.15,ease:"power1.in"},`+=${D*0.05}`);
+    tl.to(lid,{transform:"perspective(800px) rotateX(0deg)",duration:D*0.25,ease:"power2.inOut"},`-=0.1`);
+    tl.set(".letter-slot",{overflow:"visible"},"-=0.05");
+    tl.to(letter,{y:"-80%",opacity:1,duration:D*0.25,ease:"power2.out"},"-=0.05");
+    tl.to(envSVG,{y:"160%",opacity:0,duration:D*0.15,ease:"power2.in"},"-=0.05");
+    tl.to(letter,{y:"-100%",duration:0.4,ease:"back.out(2)"});
+    tl.add(()=>spawnSparkles(letter,sparkles),"-=0.05");
+    closeBtn.addEventListener("click",()=>{
+      const out=gsap.timeline();
+      out.to(letter,{scale:0.98,opacity:0.9,duration:0.25,ease:"power1.inOut"})
+         .to(letter,{y:"-=20%",opacity:0,duration:0.45,ease:"power2.in"})
+         .to(scene,{opacity:0,duration:0.5,onComplete:()=>{ scene.remove(); try{localStorage.setItem(SEEN_KEY,"1");}catch(e){} }},"-=0.2");
+    });
+  });
+  function spawnSparkles(card,layer){
+    if(!card||!layer)return;
+    const rect=card.getBoundingClientRect();
+    const stage=(document.querySelector(".envelope-stage")||document.body).getBoundingClientRect();
+    const cx=rect.left+rect.width/2-stage.left;
+    const cy=rect.top+rect.height/2-stage.top;
+    const count=20;
+    for(let i=0;i<count;i++){
+      const sp=document.createElement("div");
+      sp.className="sparkle";
+      const angle=(i/count)*Math.PI*2+(Math.random()*0.6-0.3);
+      const radius=Math.max(rect.width,rect.height)*0.9;
+      const x=cx+Math.cos(angle)*radius;
+      const y=cy+Math.sin(angle)*radius;
+      sp.style.left=`${x}px`; sp.style.top=`${y}px`;
+      sp.style.setProperty("--dx",`${Math.cos(angle)*40}px`);
+      sp.style.setProperty("--dy",`${Math.sin(angle)*-40-30}px`);
+      layer.appendChild(sp);
+      sp.addEventListener("animationend",()=>sp.remove());
+    }
+  }
+});
+
+
+</script>
+</main>
+</body>
+</html>
