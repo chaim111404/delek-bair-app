@@ -1590,19 +1590,23 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 });
 
-/* 🔄 בדיקת גרסה חכמה עם תמיכה מלאה ב־iPhone PWA, אנדרואיד ודפדפנים רגילים */
+/* 🔄 בדיקת גרסה חכמה – ריענון אוטומטי חד־פעמי (תומך iPhone/Android/PWA/מחשב) */
 class LiveVersionWatcher {
-  constructor(checkInterval = 5000) { // כל כמה זמן לבדוק (מילישניות) – כאן 5 שניות
+  constructor(checkInterval = 5000) { // כמה זמן לבדוק (מילישניות) – כאן כל 5 שניות
     this.interval = checkInterval;
     this.versionKey = 'currentVersion';
     this.startWatching();
   }
 
-  // בדיקה האם המשתמש באפליקציה (PWA)
+  // ✅ בדיקה האם האתר רץ במצב אפליקציה (PWA באייפון או אנדרואיד)
   isStandalone() {
-    return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    );
   }
 
+  // ✅ מביא את הגרסה הנוכחית מקובץ JSON (למשל version.json)
   async fetchVersion() {
     try {
       const response = await fetch('version.json?_=' + Date.now(), { cache: 'no-store' });
@@ -1614,81 +1618,72 @@ class LiveVersionWatcher {
     }
   }
 
+  // ✅ מנגנון שמתחיל לבדוק כל כמה שניות אם יש גרסה חדשה
   async startWatching() {
     const stored = localStorage.getItem(this.versionKey);
     const version = await this.fetchVersion();
 
+    // אם יש גרסה חדשה – רענון חד־פעמי בלבד
     if (version && stored && stored !== version) {
-      location.reload(true);
-
+      this.refreshOnce();
       return;
     }
 
     if (version) localStorage.setItem(this.versionKey, version);
 
+    // לולאה שבודקת גרסה כל X שניות
     setInterval(async () => {
       const newVersion = await this.fetchVersion();
       if (newVersion && localStorage.getItem(this.versionKey) !== newVersion) {
-        location.reload(true);
-
+        this.refreshOnce();
       }
     }, this.interval);
   }
 
-  showUpdatePopup() {
-    // מחיקת פופאפ קודם אם קיים
-    const oldPopup = document.querySelector('.update-popup');
-    if (oldPopup) oldPopup.remove();
+  // ✅ רענון חד־פעמי אמיתי ללא לולאה אינסופית
+  refreshOnce() {
+    // אם כבר רוענן בטעינה הנוכחית — לא לרענן שוב
+    if (sessionStorage.getItem('alreadyRefreshed') === 'true') return;
+    sessionStorage.setItem('alreadyRefreshed', 'true');
 
-    const popup = document.createElement('div');
-    popup.className = 'update-popup';
-    popup.textContent = '✨ גרסה חדשה זמינה — לוחץ ומרענן';
-    Object.assign(popup.style, {
+    // אנימציית טעינה קצרה לפני הרענון (אופציונלי)
+    this.showReloadOverlay();
+
+    // מבצע ריענון אמיתי אחרי חצי שנייה
+    setTimeout(() => {
+      localStorage.removeItem(this.versionKey);
+      location.reload(true);
+    }, 500);
+  }
+
+  // ✅ שכבת טעינה נעימה בזמן הרענון (בונוס UX)
+  showReloadOverlay() {
+    const overlay = document.createElement('div');
+    overlay.textContent = '🚀 טוען גרסה חדשה...';
+    Object.assign(overlay.style, {
       position: 'fixed',
-      background: '#00e7ff',
-      color: '#001319',
+      inset: 0,
+      background: 'rgba(0, 0, 0, 0.85)',
+      color: '#00e7ff',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '22px',
       fontWeight: '900',
-      padding: '12px 22px',
-      borderRadius: '999px',
-      boxShadow: '0 0 20px rgba(0,231,255,.5)',
-      cursor: 'pointer',
-      zIndex: '99999',
+      zIndex: '999999',
       fontFamily: 'Heebo, sans-serif',
-      animation: 'fadeIn .4s ease',
-      transition: 'opacity .3s ease',
-      opacity: '0'
+      opacity: '0',
+      transition: 'opacity .4s ease'
     });
-
-    // מיקום שונה באפליקציה כדי לא להסתיר דברים
-    if (this.isStandalone()) {
-      popup.style.bottom = '50%';
-      popup.style.right = '50%';
-      popup.style.transform = 'translate(50%, 50%)';
-    } else {
-      popup.style.bottom = '20px';
-      popup.style.right = '20px';
-    }
-
-    // הוספה לדף
-    document.body.appendChild(popup);
-    requestAnimationFrame(() => popup.style.opacity = '1');
-
-    // בלחיצה – מחיקה וריענון אמיתי
-    popup.onclick = () => {
-      popup.style.opacity = '0';
-      setTimeout(() => {
-        popup.remove();
-        localStorage.removeItem(this.versionKey); // מנקה כדי שלא יתקע
-        location.reload(true); // ריענון פיזי מלא
-      }, 300);
-    };
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => (overlay.style.opacity = '1'));
   }
 }
 
-// הפעלה אוטומטית
-new LiveVersionWatcher(5000); // בודק כל 5 שניות
+// ✅ הפעלה אוטומטית של המנגנון
+new LiveVersionWatcher(5000);
 
-/* 🔹 אנימציה קלה */
+/* 🔹 אנימציה כללית (אם אין לך כבר אחת) */
 const style = document.createElement('style');
 style.textContent = `
 @keyframes fadeIn {
@@ -1697,6 +1692,7 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
 
 
 
