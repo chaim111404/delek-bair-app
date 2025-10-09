@@ -98,7 +98,7 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
 .app{min-height:100dvh;display:flex;flex-direction:column;gap:16px;padding:14px;max-width:640px;margin-inline:auto}
 
 /* בית – ריווח קל יותר בין לחצנים */
-.home{display:flex;flex-direction:column;gap:18px;margin-top:6px}
+.home{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height: 100vh;gap: 18px;margin-top: 0; }
 .btn-cat{
   width:100%;padding:25px 16px;border-radius:50px;border:1px solid rgba(0,231,255,.65);
   background:radial-gradient(120% 140% at 50% 0%,rgba(0,231,255,.22),rgba(0,231,255,.06) 60%);
@@ -605,26 +605,6 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
 @media (min-width: 861px) {
   .btn-skip-cat { display: none; } /* מוצג רק במובייל */
 }
-
-/* 🔹 חיזוק עיצוב בלבד — בלי לשנות לוגיקה */
-.actions {
-  position: absolute !important;
-  top: 50% !important; /* <<< הזזה למטה – שנה ערך לפי הצורך */
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  justify-content: center !important;
-  gap: 10px !important;
-  width: 90% !important;
-}
-
-.btn {
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  text-align: center !important;
-  cursor: pointer !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-
 
 
 
