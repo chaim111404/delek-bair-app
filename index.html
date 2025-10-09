@@ -1590,15 +1590,15 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 });
 
-/* 🔄 בדיקת גרסה חכמה – ריענון אוטומטי חד־פעמי (תומך iPhone/Android/PWA/מחשב) */
+/* 🔄 רענון אוטומטי חכם – תומך iPhone, Android, Windows ו־Mac */
 class LiveVersionWatcher {
-  constructor(checkInterval = 5000) { // כמה זמן לבדוק (מילישניות) – כאן כל 5 שניות
+  constructor(checkInterval = 5000) { // בודק כל 5 שניות
     this.interval = checkInterval;
     this.versionKey = 'currentVersion';
     this.startWatching();
   }
 
-  // ✅ בדיקה האם האתר רץ במצב אפליקציה (PWA באייפון או אנדרואיד)
+  // מזהה אם האתר רץ במצב אפליקציה
   isStandalone() {
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -1606,64 +1606,47 @@ class LiveVersionWatcher {
     );
   }
 
-  // ✅ מביא את הגרסה הנוכחית מקובץ JSON (למשל version.json)
+  // מביא את גרסת האתר
   async fetchVersion() {
     try {
-      const response = await fetch('version.json?_=' + Date.now(), { cache: 'no-store' });
-      if (!response.ok) return null;
-      const data = await response.json();
+      const res = await fetch('version.json?_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
       return data.version;
     } catch {
       return null;
     }
   }
 
-  // ✅ מנגנון שמתחיל לבדוק כל כמה שניות אם יש גרסה חדשה
+  // מנגנון שמנטר שינויים כל 5 שניות
   async startWatching() {
-    const stored = localStorage.getItem(this.versionKey);
     const version = await this.fetchVersion();
-
-    // אם יש גרסה חדשה – רענון חד־פעמי בלבד
-    if (version && stored && stored !== version) {
-      this.refreshOnce();
-      return;
-    }
-
     if (version) localStorage.setItem(this.versionKey, version);
 
-    // לולאה שבודקת גרסה כל X שניות
     setInterval(async () => {
       const newVersion = await this.fetchVersion();
-      if (newVersion && localStorage.getItem(this.versionKey) !== newVersion) {
-        this.refreshOnce();
+      const current = localStorage.getItem(this.versionKey);
+
+      // אם יש שינוי בגרסה → רענון אוטומטי עם אנימציה
+      if (newVersion && current && newVersion !== current) {
+        this.animateAndRefresh();
+        localStorage.setItem(this.versionKey, newVersion); // עדכון לגרסה החדשה
       }
     }, this.interval);
   }
 
-  // ✅ רענון חד־פעמי אמיתי ללא לולאה אינסופית
-  refreshOnce() {
-    // אם כבר רוענן בטעינה הנוכחית — לא לרענן שוב
-    if (sessionStorage.getItem('alreadyRefreshed') === 'true') return;
-    sessionStorage.setItem('alreadyRefreshed', 'true');
+  // אנימציה וריענון אמיתי
+  animateAndRefresh() {
+    // לא לאפשר כפילויות
+    if (document.querySelector('.version-overlay')) return;
 
-    // אנימציית טעינה קצרה לפני הרענון (אופציונלי)
-    this.showReloadOverlay();
-
-    // מבצע ריענון אמיתי אחרי חצי שנייה
-    setTimeout(() => {
-      localStorage.removeItem(this.versionKey);
-      location.reload(true);
-    }, 500);
-  }
-
-  // ✅ שכבת טעינה נעימה בזמן הרענון (בונוס UX)
-  showReloadOverlay() {
     const overlay = document.createElement('div');
+    overlay.className = 'version-overlay';
     overlay.textContent = '🚀 טוען גרסה חדשה...';
     Object.assign(overlay.style, {
       position: 'fixed',
       inset: 0,
-      background: 'rgba(0, 0, 0, 0.85)',
+      background: 'rgba(0, 0, 0, 0.9)',
       color: '#00e7ff',
       display: 'flex',
       alignItems: 'center',
@@ -1673,17 +1656,25 @@ class LiveVersionWatcher {
       zIndex: '999999',
       fontFamily: 'Heebo, sans-serif',
       opacity: '0',
-      transition: 'opacity .4s ease'
+      transition: 'opacity .4s ease',
     });
     document.body.appendChild(overlay);
     requestAnimationFrame(() => (overlay.style.opacity = '1'));
+
+    // ריענון אחרי חצי שנייה (חד פעמי)
+    setTimeout(() => {
+      overlay.textContent = '✨ טוען...';
+      setTimeout(() => {
+        location.reload(true);
+      }, 400);
+    }, 700);
   }
 }
 
-// ✅ הפעלה אוטומטית של המנגנון
+// הפעלה אוטומטית
 new LiveVersionWatcher(5000);
 
-/* 🔹 אנימציה כללית (אם אין לך כבר אחת) */
+/* 🔹 אנימציה כללית */
 const style = document.createElement('style');
 style.textContent = `
 @keyframes fadeIn {
@@ -1692,6 +1683,7 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
 
 
 
