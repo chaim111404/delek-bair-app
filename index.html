@@ -606,6 +606,26 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
   .btn-skip-cat { display: none; } /* מוצג רק במובייל */
 }
 
+/* 🔹 חיזוק עיצוב בלבד — בלי לשנות לוגיקה */
+.actions {
+  position: absolute !important;
+  top: 50% !important; /* <<< הזזה למטה – שנה ערך לפי הצורך */
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  width: 90% !important;
+}
+
+.btn {
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+
 
 
 
