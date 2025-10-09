@@ -619,7 +619,7 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
   <!-- בית -->
   <section class="home" id="home">
     <button class="btn-cat" data-cat="drinks">מילוי מקרר שתייה</button>
-    <button class="btn-cat" data-cat="snacks">מילוי זה 25151</button>
+    <button class="btn-cat" data-cat="snacks">מילוי זה ץץץץץץץ</button>
     <button class="btn-cat" data-cat="choco">מילוי שוקולדים</button>
   </section>
 
@@ -1590,12 +1590,17 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 });
 
-/* 🔄 בדיקת גרסה חכמה – רענון אוטומטי לכל המשתמשים */
+/* 🔄 בדיקת גרסה חכמה עם תמיכה מלאה ב־iPhone PWA, אנדרואיד ודפדפנים רגילים */
 class LiveVersionWatcher {
-  constructor(checkInterval = 3000) { // כל כמה זמן לבדוק (מילישניות) – כאן 10 שניות
+  constructor(checkInterval = 5000) { // כל כמה זמן לבדוק (מילישניות) – כאן 5 שניות
     this.interval = checkInterval;
     this.versionKey = 'currentVersion';
     this.startWatching();
+  }
+
+  // בדיקה האם המשתמש באפליקציה (PWA)
+  isStandalone() {
+    return (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
   }
 
   async fetchVersion() {
@@ -1614,7 +1619,8 @@ class LiveVersionWatcher {
     const version = await this.fetchVersion();
 
     if (version && stored && stored !== version) {
-      this.showUpdatePopup();
+      location.reload(true);
+
       return;
     }
 
@@ -1623,45 +1629,75 @@ class LiveVersionWatcher {
     setInterval(async () => {
       const newVersion = await this.fetchVersion();
       if (newVersion && localStorage.getItem(this.versionKey) !== newVersion) {
-        this.showUpdatePopup();
+        location.reload(true);
+
       }
     }, this.interval);
   }
 
   showUpdatePopup() {
-    // פופ־אפ קטן ונעים שמופיע למשתמש (עובד בכל דפדפן)
+    // מחיקת פופאפ קודם אם קיים
+    const oldPopup = document.querySelector('.update-popup');
+    if (oldPopup) oldPopup.remove();
+
     const popup = document.createElement('div');
+    popup.className = 'update-popup';
     popup.textContent = '✨ גרסה חדשה זמינה — לוחץ ומרענן';
     Object.assign(popup.style, {
       position: 'fixed',
-      bottom: '20px',
-      right: '20px',
       background: '#00e7ff',
       color: '#001319',
       fontWeight: '900',
-      padding: '10px 18px',
+      padding: '12px 22px',
       borderRadius: '999px',
-      boxShadow: '0 0 18px rgba(0,231,255,.5)',
+      boxShadow: '0 0 20px rgba(0,231,255,.5)',
       cursor: 'pointer',
       zIndex: '99999',
       fontFamily: 'Heebo, sans-serif',
-      animation: 'fadeIn .4s ease'
+      animation: 'fadeIn .4s ease',
+      transition: 'opacity .3s ease',
+      opacity: '0'
     });
 
-    popup.onclick = () => location.reload(true);
+    // מיקום שונה באפליקציה כדי לא להסתיר דברים
+    if (this.isStandalone()) {
+      popup.style.bottom = '50%';
+      popup.style.right = '50%';
+      popup.style.transform = 'translate(50%, 50%)';
+    } else {
+      popup.style.bottom = '20px';
+      popup.style.right = '20px';
+    }
+
+    // הוספה לדף
     document.body.appendChild(popup);
+    requestAnimationFrame(() => popup.style.opacity = '1');
+
+    // בלחיצה – מחיקה וריענון אמיתי
+    popup.onclick = () => {
+      popup.style.opacity = '0';
+      setTimeout(() => {
+        popup.remove();
+        localStorage.removeItem(this.versionKey); // מנקה כדי שלא יתקע
+        location.reload(true); // ריענון פיזי מלא
+      }, 300);
+    };
   }
 }
 
 // הפעלה אוטומטית
-new LiveVersionWatcher(3000); // בודק כל 10 שניות
+new LiveVersionWatcher(5000); // בודק כל 5 שניות
 
-/* אנימציה קלה */
+/* 🔹 אנימציה קלה */
 const style = document.createElement('style');
 style.textContent = `
-@keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
 `;
 document.head.appendChild(style);
+
 
 
 
