@@ -1590,6 +1590,80 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 });
 
+/* 🔄 בדיקת גרסה חכמה – רענון אוטומטי לכל המשתמשים */
+class LiveVersionWatcher {
+  constructor(checkInterval = 3000) { // כל כמה זמן לבדוק (מילישניות) – כאן 10 שניות
+    this.interval = checkInterval;
+    this.versionKey = 'currentVersion';
+    this.startWatching();
+  }
+
+  async fetchVersion() {
+    try {
+      const response = await fetch('version.json?_=' + Date.now(), { cache: 'no-store' });
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.version;
+    } catch {
+      return null;
+    }
+  }
+
+  async startWatching() {
+    const stored = localStorage.getItem(this.versionKey);
+    const version = await this.fetchVersion();
+
+    if (version && stored && stored !== version) {
+      this.showUpdatePopup();
+      return;
+    }
+
+    if (version) localStorage.setItem(this.versionKey, version);
+
+    setInterval(async () => {
+      const newVersion = await this.fetchVersion();
+      if (newVersion && localStorage.getItem(this.versionKey) !== newVersion) {
+        this.showUpdatePopup();
+      }
+    }, this.interval);
+  }
+
+  showUpdatePopup() {
+    // פופ־אפ קטן ונעים שמופיע למשתמש (עובד בכל דפדפן)
+    const popup = document.createElement('div');
+    popup.textContent = '✨ גרסה חדשה זמינה — לוחץ ומרענן';
+    Object.assign(popup.style, {
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      background: '#00e7ff',
+      color: '#001319',
+      fontWeight: '900',
+      padding: '10px 18px',
+      borderRadius: '999px',
+      boxShadow: '0 0 18px rgba(0,231,255,.5)',
+      cursor: 'pointer',
+      zIndex: '99999',
+      fontFamily: 'Heebo, sans-serif',
+      animation: 'fadeIn .4s ease'
+    });
+
+    popup.onclick = () => location.reload(true);
+    document.body.appendChild(popup);
+  }
+}
+
+// הפעלה אוטומטית
+new LiveVersionWatcher(3000); // בודק כל 10 שניות
+
+/* אנימציה קלה */
+const style = document.createElement('style');
+style.textContent = `
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+`;
+document.head.appendChild(style);
+
+
 
 </script>
 </main>
