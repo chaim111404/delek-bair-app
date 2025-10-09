@@ -107,7 +107,7 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
   -webkit-tap-highlight-color:transparent;
 }
 .btn-cat:before{
-  content:"";position:absolute;inset:-7px;border-radius:100px;border:2px solid rgba(0,231,255,.10);
+  content:"";position:absolute;inset: -7px;px;border-radius:100px;border:2px solid rgba(0,231,255,.10);
   animation:halo 2s ease-in-out infinite;opacity:.95;filter:blur(1px)
 }
 @keyframes halo{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:1}}
@@ -160,7 +160,7 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
 
 /* טקסט ומקשים */
 .name{font-weight:900;font-size:18px;letter-spacing:.2px}
-.actions{display:flex;gap:10px}
+.actions{display:flex;gap:10px;justify-content:center;margin-top:180px}
 .btn{flex:1;padding:14px;border-radius:999px;font-weight:900;text-align:center;cursor:pointer;position:relative;border:1px solid transparent;-webkit-tap-highlight-color:transparent}
 /* סדר: מלא מימין, מילוי משמאל */
 .btn.fill{background:var(--green);color:#01261b;order:1}
