@@ -606,6 +606,56 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
   .btn-skip-cat { display: none; } /* מוצג רק במובייל */
 }
 
+/* ===== הודעה למחשב בלבד ===== */
+#desktopNotice {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 999999;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#desktopNotice .notice-box {
+  background: #111;
+  border: 2px solid #00e7ff;
+  border-radius: 15px;
+  padding: 40px 25px;
+  color: #fff;
+  width: 350px;
+  box-shadow: 0 0 15px #00e7ff;
+}
+
+#desktopNotice h2 {
+  color: #00e7ff;
+  margin-bottom: 10px;
+}
+
+#desktopNotice button {
+  margin-top: 20px;
+  background: #00e7ff;
+  border: none;
+  color: #000;
+  padding: 10px 30px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#desktopNotice button:hover {
+  background: #00cfe6;
+}
+
+/* החלון מוצג רק במחשב */
+@media (min-width: 769px) {
+  #desktopNotice {
+    display: flex;
+  }
+}
+
 
 
 
@@ -819,10 +869,15 @@ body{margin:0;background:#000;color:var(--text);font-family:Heebo,system-ui,-app
   </div>
 </div>
 
-
-
-
-
+<!-- ===== חלון הודעה למחשב בלבד ===== -->
+<div id="desktopNotice">
+  <div class="notice-box">
+    <h2>משתמשים יקרים</h2>
+    <p>בשביל למלא סחורה ולהשתמש באפליקציה נא לעבור למובייל</p>
+    <small>(בטלפון הנייד)</small>
+    <button id="closeNotice">אישור</button>
+  </div>
+</div>
 
 
   <script>
@@ -1683,6 +1738,27 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+// ===== הודעה למשתמשי מחשב בלבד =====
+document.addEventListener("DOMContentLoaded", () => {
+  const notice = document.getElementById('desktopNotice');
+  const closeBtn = document.getElementById('closeNotice');
+
+  if (window.innerWidth > 768 && notice) {
+    // מופיע רק במחשב
+    notice.style.display = "flex";
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      notice.style.opacity = "0";
+      notice.style.transition = "opacity 0.5s ease";
+      setTimeout(() => {
+        notice.style.display = "none";
+      }, 500);
+    });
+  }
+});
 
 
 
