@@ -1626,11 +1626,11 @@ document.getElementById("surveyForm").addEventListener("submit",(e)=>{
 doneBtn.addEventListener("click", ()=>{ clearDraft(); clearPick(); showHome(); openSurveyOnce(); });
 
 /* === פופאפ כרטיסיות נבחרות עם זיכרון וגרסה === */
-const NOTE_VERSION="v2";
+const NOTE_VERSION="v3";
 const cardNoteModal=document.getElementById("cardNoteModal");
 const cardNoteOk=document.getElementById("cardNoteOk");
 const dontShowAgain=document.getElementById("dontShowAgain");
-const noteItems=["excel_ten","excel_festi"];
+const noteItems=["mint_crunch","dark_cocoa"];
 function shouldShowNote(id){ const key=`cardNote_${NOTE_VERSION}_${id}`; return !localStorage.getItem(key); }
 function markAsHidden(id){ const key=`cardNote_${NOTE_VERSION}_${id}`; localStorage.setItem(key,"hidden"); }
 const originalRenderStep = renderStep;
